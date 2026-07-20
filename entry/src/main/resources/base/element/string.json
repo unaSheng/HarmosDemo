@@ -1,0 +1,52 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "label"
+    },
+    {
+      "name": "tab_home",
+      "value": "首页"
+    },
+    {
+      "name": "tab_me",
+      "value": "我"
+    },
+    {
+      "name": "home_title",
+      "value": "首页"
+    },
+    {
+      "name": "me_title",
+      "value": "我的"
+    },
+    {
+      "name": "open_horizontal_list",
+      "value": "进入横向列表"
+    },
+    {
+      "name": "open_user_list",
+      "value": "进入用户列表"
+    },
+    {
+      "name": "horizontal_list_title",
+      "value": "横向列表"
+    },
+    {
+      "name": "user_list_title",
+      "value": "用户列表"
+    },
+    {
+      "name": "back",
+      "value": "返回"
+    }
+  ]
+}
