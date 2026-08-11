@@ -103,7 +103,7 @@
       "error": false
     },
     "/Users/user/MM/HarmosDemo/entry/src/main/ets/entryability/EntryAbility.ets": {
-      "mtimeMs": 1784543435224.2607,
+      "mtimeMs": 1786438742688.5916,
       "children": [
         "/Applications/DevEco-Studio.app/Contents/sdk/default/openharmony/ets/api/@ohos.app.ability.AbilityConstant.d.ts",
         "/Applications/DevEco-Studio.app/Contents/sdk/default/openharmony/ets/api/@ohos.app.ability.ConfigurationConstant.d.ts",
@@ -1535,9 +1535,10 @@
       "error": false
     },
     "/Users/user/MM/HarmosDemo/entry/src/main/ets/pages/HorizontalListPage.ets": {
-      "mtimeMs": 1786434639733.9321,
+      "mtimeMs": 1786445511753.1128,
       "children": [
-        "/Applications/DevEco-Studio.app/Contents/sdk/default/openharmony/ets/api/@ohos.router.d.ts"
+        "/Applications/DevEco-Studio.app/Contents/sdk/default/openharmony/ets/api/@ohos.router.d.ts",
+        "/Users/user/MM/HarmosDemo/entry/src/main/ets/model/Info.ets"
       ],
       "parent": [],
       "error": true,
@@ -2002,6 +2003,27 @@
       "parent": [
         "/Applications/DevEco-Studio.app/Contents/sdk/default/openharmony/ets/api/@ohos.security.cert.d.ts"
       ],
+      "error": false
+    },
+    "/Users/user/MM/HarmosDemo/entry/src/main/ets/model/Info.ets": {
+      "mtimeMs": 1786441021910.4653,
+      "children": [],
+      "parent": [
+        "/Users/user/MM/HarmosDemo/entry/src/main/ets/pages/HorizontalListPage.ets",
+        "/Users/user/MM/HarmosDemo/entry/src/main/ets/pages/DetailPage.ets"
+      ],
+      "error": false,
+      "errorCodes": [
+        38,
+        8
+      ]
+    },
+    "/Users/user/MM/HarmosDemo/entry/src/main/ets/pages/DetailPage.ets": {
+      "mtimeMs": 1786446036405.6404,
+      "children": [
+        "/Users/user/MM/HarmosDemo/entry/src/main/ets/model/Info.ets"
+      ],
+      "parent": [],
       "error": false
     }
   }

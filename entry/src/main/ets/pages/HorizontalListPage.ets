@@ -1,11 +1,11 @@
 import router from '@ohos.router';
-
+import { Info, InfoJSON } from '../model/Info';
 
 @Entry
-@Component
+@ComponentV2
 struct HorizontalListPage {
   private readonly items: string[] = ['列表页 1', '列表页 2', '列表页 3', '列表页 4'];
-  @State message: string = 'Hello';
+  @Local info: Info = new Info();
 
   build() {
     Scroll() {
@@ -36,20 +36,34 @@ struct HorizontalListPage {
           bottom: 12
         })
 
+        Text(`name: ${this.info.name}, age: ${this.info.age}`)
+          .fontSize(16)
+          .margin({ bottom: 8 })
 
-        Button('点击')
+        Button('反序列化')
+          .margin({ bottom: 8 })
           .onClick(() => {
+            // const realInfo: Info = new Info();
+            // realInfo.name = 'Alice';
+            // realInfo.age = 30;
+            // const jsonResult: string = JSON.stringify(realInfo);
+            // const restoredInfo: Info = Info.fromJSON(jsonResult);
+            // const isInfoByRestored: boolean = restoredInfo instanceof Info;
+            // this.info.name = restoredInfo.name;
+            // this.info.age = restoredInfo.age;
+            // console.log(`${isInfoByRestored}`);
 
-            let realInfo: Info = new Info();
-            let jsonResult: string = JSON.stringify(realInfo); // '{"__ob_name":"Tom","__ob_age":24}'
-            let parseInfo: Info = JSON.parse(jsonResult);
 
-            // 与直接通过new操作符创建的对象不同，JSON.parse获得的对象实际并不是Info的实例，所以无属性观察能力
-            let isInfoByNew: boolean = realInfo instanceof Info; // true
-            let isInfoByParse: boolean = parseInfo instanceof Info; // false
-            // let transformedInfo: Info = plainToInstance(Info, parseInfo);
-            // let isInfoByTransformed: boolean = transformedInfo instanceof Info; // true
-            console.log(`${isInfoByNew}, ${isInfoByParse}`);
+
+            router.pushUrl({ url: 'pages/DetailPage', params: this.info }).catch(() => {
+
+            });
+          })
+
+        Button('age + 1（验证 @Trace 响应式）')
+          .margin({ bottom: 16 })
+          .onClick(() => {
+            this.info.age++;
           })
 
         Swiper() {
@@ -81,12 +95,4 @@ struct HorizontalListPage {
     .height('100%')
     .scrollBar(BarState.Auto)
   }
-}
-
-
-// 测试代码
-@ObservedV2
-class Info {
-  @Trace name: string = 'Tom';
-  @Trace age: number = 24;
 }

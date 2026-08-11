@@ -2,6 +2,7 @@
   "src": [
     "pages/Index",
     "pages/HorizontalListPage",
-    "pages/UserListPage"
+    "pages/UserListPage",
+    "pages/DetailPage"
   ]
 }
