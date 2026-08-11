@@ -3,6 +3,7 @@ if (!("finalizeConstruction" in ViewPU.prototype)) {
 }
 interface HorizontalListPage_Params {
     items?: string[];
+    message?: string;
 }
 import router from "@ohos:router";
 class HorizontalListPage extends ViewPU {
@@ -12,6 +13,7 @@ class HorizontalListPage extends ViewPU {
             this.paramsGenerator_ = paramsLambda;
         }
         this.items = ['列表页 1', '列表页 2', '列表页 3', '列表页 4'];
+        this.__message = new ObservedPropertySimplePU('Hello', this, "message");
         this.setInitiallyProvidedValue(params);
         this.finalizeConstruction();
     }
@@ -19,26 +21,48 @@ class HorizontalListPage extends ViewPU {
         if (params.items !== undefined) {
             this.items = params.items;
         }
+        if (params.message !== undefined) {
+            this.message = params.message;
+        }
     }
     updateStateVars(params: HorizontalListPage_Params) {
     }
     purgeVariableDependenciesOnElmtId(rmElmtId) {
+        this.__message.purgeDependencyOnElmtId(rmElmtId);
     }
     aboutToBeDeleted() {
+        this.__message.aboutToBeDeleted();
         SubscriberManager.Get().delete(this.id__());
         this.aboutToBeDeletedInternal();
     }
     private readonly items: string[];
+    private __message: ObservedPropertySimplePU<string>;
+    get message() {
+        return this.__message.get();
+    }
+    set message(newValue: string) {
+        this.__message.set(newValue);
+    }
     initialRender() {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Scroll.create();
+            Scroll.width('100%');
+            Scroll.height('100%');
+            Scroll.scrollBar(BarState.Auto);
+        }, Scroll);
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Column.create();
             Column.width('100%');
-            Column.height('100%');
         }, Column);
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Row.create();
             Row.width('100%');
-            Row.padding({ left: 12, right: 12, top: 12, bottom: 12 });
+            Row.padding({
+                left: 12,
+                right: 12,
+                top: 12,
+                bottom: 12
+            });
         }, Row);
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Button.createWithLabel({ "id": 16777222, "type": 10003, params: [], "bundleName": "com.example.simpledemo", "moduleName": "entry" });
@@ -65,9 +89,24 @@ class HorizontalListPage extends ViewPU {
         Blank.pop();
         Row.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Button.createWithLabel('点击');
+            Button.onClick(() => {
+                let realInfo: Info = new Info();
+                let jsonResult: string = JSON.stringify(realInfo); // '{"__ob_name":"Tom","__ob_age":24}'
+                let parseInfo: Info = JSON.parse(jsonResult);
+                // 与直接通过new操作符创建的对象不同，JSON.parse获得的对象实际并不是Info的实例，所以无属性观察能力
+                let isInfoByNew: boolean = realInfo instanceof Info; // true
+                let isInfoByParse: boolean = parseInfo instanceof Info; // false
+                // let transformedInfo: Info = plainToInstance(Info, parseInfo);
+                // let isInfoByTransformed: boolean = transformedInfo instanceof Info; // true
+                console.log(`${isInfoByNew}, ${isInfoByParse}`);
+            });
+        }, Button);
+        Button.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
             Swiper.create();
             Swiper.width('100%');
-            Swiper.layoutWeight(1);
+            Swiper.height(320);
             Swiper.indicator(true);
             Swiper.loop(false);
         }, Swiper);
@@ -102,6 +141,7 @@ class HorizontalListPage extends ViewPU {
         ForEach.pop();
         Swiper.pop();
         Column.pop();
+        Scroll.pop();
     }
     rerender() {
         this.updateDirtyElements();
@@ -109,5 +149,13 @@ class HorizontalListPage extends ViewPU {
     static getEntryName(): string {
         return "HorizontalListPage";
     }
+}
+// 测试代码
+@ObservedV2
+class Info {
+    @Trace
+    name: string = 'Tom';
+    @Trace
+    age: number = 24;
 }
 registerNamedRoute(() => new HorizontalListPage(undefined, {}), "", { bundleName: "com.example.simpledemo", moduleName: "entry", pagePath: "pages/HorizontalListPage", pageFullPath: "entry/src/main/ets/pages/HorizontalListPage", integratedHsp: "false", moduleType: "followWithHap" });

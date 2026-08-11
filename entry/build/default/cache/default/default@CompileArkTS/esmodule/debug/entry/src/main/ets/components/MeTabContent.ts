@@ -40,7 +40,8 @@ export class MeTabContent extends ViewPU {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Button.createWithLabel({ "id": 16777228, "type": 10003, params: [], "bundleName": "com.example.simpledemo", "moduleName": "entry" });
             Button.onClick(() => {
-                router.pushUrl({ url: 'pages/UserListPage' });
+                router.pushUrl({ url: 'pages/UserListPage' }).catch(() => {
+                });
             });
         }, Button);
         Button.pop();

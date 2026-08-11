@@ -11,7 +11,8 @@ export struct MeTabContent {
 
       Button($r('app.string.open_user_list'))
         .onClick(() => {
-          router.pushUrl({ url: 'pages/UserListPage' });
+          router.pushUrl({ url: 'pages/UserListPage' }).catch(() => {
+          });
         })
     }
     .width('100%')

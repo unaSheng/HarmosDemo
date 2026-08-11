@@ -40,7 +40,8 @@ export class HomeTabContent extends ViewPU {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Button.createWithLabel({ "id": 16777227, "type": 10003, params: [], "bundleName": "com.example.simpledemo", "moduleName": "entry" });
             Button.onClick(() => {
-                router.pushUrl({ url: 'pages/HorizontalListPage' });
+                router.pushUrl({ url: 'pages/HorizontalListPage' }).catch(() => {
+                });
             });
         }, Button);
         Button.pop();

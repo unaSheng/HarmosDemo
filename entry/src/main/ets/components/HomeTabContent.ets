@@ -11,7 +11,8 @@ export struct HomeTabContent {
 
       Button($r('app.string.open_horizontal_list'))
         .onClick(() => {
-          router.pushUrl({ url: 'pages/HorizontalListPage' });
+          router.pushUrl({ url: 'pages/HorizontalListPage' }).catch(() => {
+          });
         })
     }
     .width('100%')
