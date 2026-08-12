@@ -1,6 +1,6 @@
 {
 	"CommonInfo":{
-		"project.ide.version":"6.0.1.251",
+		"project.ide.version":"6.1.1.300",
 		"current.select.product":"default",
 		"current.select.buildMode":"",
 		"crossplatform.projectType":""
@@ -9,7 +9,7 @@
 		"SELECT_BUILD_PRODUCT":"default",
 		"BUNDLE_NAME":"com.example.simpledemo",
 		"BUILD_PATH":{
-			"OUTPUT_PATH":"/Users/user/MM/HarmosDemo/build/outputs/default"
+			"OUTPUT_PATH":"/Users/sheng/Documents/HarmosDemo/build/outputs/default"
 		},
 		"SELECT_BUILD_MODE":""
 	}

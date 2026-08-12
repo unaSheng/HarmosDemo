@@ -1,26 +1,29 @@
 import { Info } from '../model/Info';
 
-@Entry
 @ComponentV2
-struct Detail {
-  @Local params?: Info
-
-  aboutToAppear(): void {
-    const str: string = JSON.stringify(this.getUIContext().getRouter().getParams());
-    this.params = Info.fromJSON(str)
-  }
+export struct DetailPage {
+  @Local params?: Info;
 
   build() {
-    Column() {
-      Text(`Detail Page: ${this.params?.name} ${this.params?.age}`)
-        .fontSize(20)
-        .margin(10)
-        .onClick(() => {
-          if (this.params) {
-            this.params.age = 85;
-          }
-        })
+    NavDestination() {
+      Column() {
+        Text(`Detail Page: ${this.params?.name} ${this.params?.age}`)
+          .fontSize(20)
+          .margin(10)
+          .onClick(() => {
+            if (this.params) {
+              this.params.age = 85;
+            }
+          })
+      }
+      .width('100%')
     }
-    .width('100%')
+    .hideTitleBar(true)
+    .onReady((ctx: NavDestinationContext) => {
+      const param = ctx.pathInfo.param as Info;
+      if (param) {
+        this.params = param;
+      }
+    })
   }
 }

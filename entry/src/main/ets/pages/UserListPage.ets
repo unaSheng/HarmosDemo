@@ -1,4 +1,4 @@
-import router from '@ohos.router';
+import { appNavStack } from '../common/AppNavStack';
 
 interface UserInfo {
   id: number;
@@ -6,9 +6,8 @@ interface UserInfo {
   desc: string;
 }
 
-@Entry
 @Component
-struct UserListPage {
+export struct UserListPage {
   private readonly users: UserInfo[] = [
     { id: 1, name: '张三', desc: 'HarmonyOS 开发者' },
     { id: 2, name: '李四', desc: 'UI 设计师' },
@@ -25,54 +24,57 @@ struct UserListPage {
   ];
 
   build() {
-    Column() {
-      Row() {
-        Button($r('app.string.back'))
-          .type(ButtonType.Normal)
-          .backgroundColor(Color.Transparent)
-          .fontColor('#007DFF')
-          .onClick(() => {
-            router.back();
-          })
+    NavDestination() {
+      Column() {
+        Row() {
+          Button($r('app.string.back'))
+            .type(ButtonType.Normal)
+            .backgroundColor(Color.Transparent)
+            .fontColor('#007DFF')
+            .onClick(() => {
+              appNavStack.pop();
+            })
 
-        Text($r('app.string.user_list_title'))
-          .fontSize(18)
-          .fontWeight(FontWeight.Medium)
-          .layoutWeight(1)
-          .textAlign(TextAlign.Center)
+          Text($r('app.string.user_list_title'))
+            .fontSize(18)
+            .fontWeight(FontWeight.Medium)
+            .layoutWeight(1)
+            .textAlign(TextAlign.Center)
 
-        Blank()
-          .width(48)
-      }
-      .width('100%')
-      .padding({ left: 12, right: 12, top: 12, bottom: 12 })
+          Blank()
+            .width(48)
+        }
+        .width('100%')
+        .padding({ left: 12, right: 12, top: 12, bottom: 12 })
 
-      List() {
-        ForEach(this.users, (user: UserInfo) => {
-          ListItem() {
-            Row() {
-              Column() {
-                Text(user.name)
-                  .fontSize(16)
-                  .fontWeight(FontWeight.Medium)
+        List() {
+          ForEach(this.users, (user: UserInfo) => {
+            ListItem() {
+              Row() {
+                Column() {
+                  Text(user.name)
+                    .fontSize(16)
+                    .fontWeight(FontWeight.Medium)
 
-                Text(user.desc)
-                  .fontSize(13)
-                  .fontColor('#666666')
-                  .margin({ top: 4 })
+                  Text(user.desc)
+                    .fontSize(13)
+                    .fontColor('#666666')
+                    .margin({ top: 4 })
+                }
+                .alignItems(HorizontalAlign.Start)
               }
-              .alignItems(HorizontalAlign.Start)
+              .width('100%')
+              .padding({ left: 16, right: 16, top: 14, bottom: 14 })
             }
-            .width('100%')
-            .padding({ left: 16, right: 16, top: 14, bottom: 14 })
-          }
-        }, (user: UserInfo) => user.id.toString())
+          }, (user: UserInfo) => user.id.toString())
+        }
+        .width('100%')
+        .layoutWeight(1)
+        .divider({ strokeWidth: 1, color: '#EEEEEE' })
       }
       .width('100%')
-      .layoutWeight(1)
-      .divider({ strokeWidth: 1, color: '#EEEEEE' })
+      .height('100%')
     }
-    .width('100%')
-    .height('100%')
+    .hideTitleBar(true)
   }
 }

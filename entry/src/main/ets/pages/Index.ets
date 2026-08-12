@@ -1,5 +1,9 @@
 import { HomeTabContent } from '../components/HomeTabContent';
 import { MeTabContent } from '../components/MeTabContent';
+import { appNavStack } from '../common/AppNavStack';
+import { HorizontalListPage } from './HorizontalListPage';
+import { UserListPage } from './UserListPage';
+import { DetailPage } from './DetailPage';
 
 @Entry
 @Component
@@ -19,23 +23,39 @@ struct Index {
     .justifyContent(FlexAlign.Center)
   }
 
-  build() {
-    Tabs({ barPosition: BarPosition.End, index: this.currentIndex }) {
-      TabContent() {
-        HomeTabContent()
-      }
-      .tabBar(this.tabBuilder($r('app.string.tab_home'), 0))
-
-      TabContent() {
-        MeTabContent()
-      }
-      .tabBar(this.tabBuilder($r('app.string.tab_me'), 1))
+  @Builder
+  pageMap(name: string) {
+    if (name === 'HorizontalListPage') {
+      HorizontalListPage()
+    } else if (name === 'UserListPage') {
+      UserListPage()
+    } else if (name === 'DetailPage') {
+      DetailPage()
     }
-    .width('100%')
-    .height('100%')
-    .barHeight(56)
-    .onChange((index: number) => {
-      this.currentIndex = index;
-    })
+  }
+
+  build() {
+    Navigation(appNavStack) {
+      Tabs({ barPosition: BarPosition.End, index: this.currentIndex }) {
+        TabContent() {
+          HomeTabContent()
+        }
+        .tabBar(this.tabBuilder($r('app.string.tab_home'), 0))
+
+        TabContent() {
+          MeTabContent()
+        }
+        .tabBar(this.tabBuilder($r('app.string.tab_me'), 1))
+      }
+      .width('100%')
+      .height('100%')
+      .barHeight(56)
+      .onChange((index: number) => {
+        this.currentIndex = index;
+      })
+    }
+    .mode(NavigationMode.Stack)
+    .hideTitleBar(true)
+    .navDestination(this.pageMap)
   }
 }

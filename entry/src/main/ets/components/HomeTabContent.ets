@@ -1,4 +1,4 @@
-import router from '@ohos.router';
+import { appNavStack } from '../common/AppNavStack';
 
 @Component
 export struct HomeTabContent {
@@ -11,8 +11,7 @@ export struct HomeTabContent {
 
       Button($r('app.string.open_horizontal_list'))
         .onClick(() => {
-          router.pushUrl({ url: 'pages/HorizontalListPage' }).catch(() => {
-          });
+          appNavStack.pushPath({ name: 'HorizontalListPage' });
         })
     }
     .width('100%')

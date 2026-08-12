@@ -1,0 +1,123 @@
+# =========================
+# HarmonyOS / DevEco Studio
+# =========================
+
+# Local machine config (SDK paths, etc.)
+/local.properties
+
+# Dependencies
+/oh_modules/
+**/oh_modules/
+/node_modules/
+**/node_modules/
+
+# Build & cache
+/.hvigor/
+**/.hvigor/
+**/build/
+**/Build/
+/.cxx/
+**/.cxx/
+**/cmake-build-*/
+/.preview/
+**/.preview/
+/.test/
+**/.test/
+
+# Build outputs / packages
+*.hap
+*.hsp
+*.app
+*.apk
+*.ap_
+*.aab
+*.hqf
+
+# IDE / DevEco / JetBrains
+/.idea/
+**/*.iml
+*.iws
+*.ipr
+.idea/workspace.xml
+.idea/libraries/
+.idea/caches/
+.idea/httpRequests/
+.idea/shelf/
+.idea/dictionaries/
+.idea/runConfigurations/
+.idea/deploymentTargetSelector.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/.deveco/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# =========================
+# Signing / secrets
+# =========================
+*.p12
+*.key
+*.keystore
+*.jks
+*.pem
+*.cer
+*.crt
+*.mobileprovision
+material/
+**/material/
+*.p7b
+
+# Env / credentials
+.env
+.env.*
+!.env.example
+credentials.json
+**/secrets/
+**/secret/
+*.secret
+
+# =========================
+# Logs / temp / coverage
+# =========================
+*.log
+logs/
+**/logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+coverage/
+.nyc_output/
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Clang / C++ tooling (native modules)
+.clangd/
+.clang-format
+.clang-tidy
+compile_commands.json
+
+# Crash / dump
+*.dmp
+*.stackdump
+hs_err_pid*
+replay_pid*

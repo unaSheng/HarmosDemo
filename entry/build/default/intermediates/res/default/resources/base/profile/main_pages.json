@@ -1,8 +1,0 @@
-{
-  "src": [
-    "pages/Index",
-    "pages/HorizontalListPage",
-    "pages/UserListPage",
-    "pages/DetailPage"
-  ]
-}

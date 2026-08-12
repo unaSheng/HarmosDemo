@@ -1,4 +1,4 @@
-import router from '@ohos.router';
+import { appNavStack } from '../common/AppNavStack';
 
 @Component
 export struct MeTabContent {
@@ -11,8 +11,7 @@ export struct MeTabContent {
 
       Button($r('app.string.open_user_list'))
         .onClick(() => {
-          router.pushUrl({ url: 'pages/UserListPage' }).catch(() => {
-          });
+          appNavStack.pushPath({ name: 'UserListPage' });
         })
     }
     .width('100%')

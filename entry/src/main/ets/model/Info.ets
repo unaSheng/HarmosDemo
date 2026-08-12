@@ -8,6 +8,7 @@ export class Info {
   @Trace name: string = 'Tom';
   @Trace age: number = 24;
 
+
   toJSON(): InfoJSON {
     const result: InfoJSON = {
       name: this.name,
