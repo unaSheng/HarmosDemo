@@ -51,6 +51,14 @@
     {
       "name": "back",
       "value": "返回"
+    },
+    {
+      "name": "close",
+      "value": "关闭"
+    },
+    {
+      "name": "detail_title",
+      "value": "详情"
     }
   ]
 }

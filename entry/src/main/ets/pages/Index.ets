@@ -1,6 +1,5 @@
 import { HomeTabContent } from '../components/HomeTabContent';
 import { MeTabContent } from '../components/MeTabContent';
-import { appNavStack } from '../common/AppNavStack';
 import { HorizontalListPage } from './HorizontalListPage';
 import { UserListPage } from './UserListPage';
 import { DetailPage } from './DetailPage';
@@ -9,6 +8,7 @@ import { DetailPage } from './DetailPage';
 @Component
 struct Index {
   @State currentIndex: number = 0;
+  appNavStack: NavPathStack = new NavPathStack();
 
   @Builder
   tabBuilder(title: Resource, index: number) {
@@ -35,15 +35,15 @@ struct Index {
   }
 
   build() {
-    Navigation(appNavStack) {
+    Navigation(this.appNavStack) {
       Tabs({ barPosition: BarPosition.End, index: this.currentIndex }) {
         TabContent() {
-          HomeTabContent()
+          HomeTabContent({ appNavStack: this.appNavStack })
         }
         .tabBar(this.tabBuilder($r('app.string.tab_home'), 0))
 
         TabContent() {
-          MeTabContent()
+          MeTabContent({ appNavStack: this.appNavStack })
         }
         .tabBar(this.tabBuilder($r('app.string.tab_me'), 1))
       }

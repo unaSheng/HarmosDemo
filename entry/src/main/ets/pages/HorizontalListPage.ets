@@ -1,5 +1,4 @@
 import { Info } from '../model/Info';
-import { appNavStack } from '../common/AppNavStack';
 
 @Builder
 export function HorizontalListPageBuilder() {
@@ -10,6 +9,7 @@ export function HorizontalListPageBuilder() {
 export struct HorizontalListPage {
   private readonly items: string[] = ['列表页 1', '列表页 2', '列表页 3', '列表页 4'];
   @Local info: Info = new Info();
+  appNavStack: NavPathStack = new NavPathStack()
 
   build() {
     NavDestination() {
@@ -21,7 +21,7 @@ export struct HorizontalListPage {
               .backgroundColor(Color.Transparent)
               .fontColor('#007DFF')
               .onClick(() => {
-                appNavStack.pop();
+                this.appNavStack.pop();
               })
 
             Text($r('app.string.horizontal_list_title'))
@@ -45,10 +45,10 @@ export struct HorizontalListPage {
             .fontSize(16)
             .margin({ bottom: 8 })
 
-          Button('反序列化')
+          Button('打开详情 Dialog')
             .margin({ bottom: 8 })
             .onClick(() => {
-              appNavStack.pushPath({ name: 'DetailPage', param: this.info });
+              this.appNavStack.pushPath({ name: 'DetailPage', param: this.info });
             })
 
           Button('age + 1（验证 @Trace 响应式）')
@@ -87,5 +87,8 @@ export struct HorizontalListPage {
       .scrollBar(BarState.Auto)
     }
     .hideTitleBar(true)
+    .onResult((ctx: NavDestinationContext) => {
+      this.appNavStack = ctx.pathStack
+    })
   }
 }

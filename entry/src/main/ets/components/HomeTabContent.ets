@@ -1,7 +1,8 @@
-import { appNavStack } from '../common/AppNavStack';
 
 @Component
 export struct HomeTabContent {
+  // 由 Index 传入，与 Navigation(this.appNavStack) 为同一实例
+  appNavStack: NavPathStack = new NavPathStack();
   build() {
     Column() {
       Text($r('app.string.home_title'))
@@ -11,7 +12,7 @@ export struct HomeTabContent {
 
       Button($r('app.string.open_horizontal_list'))
         .onClick(() => {
-          appNavStack.pushPath({ name: 'HorizontalListPage' });
+          this.appNavStack.pushPath({ name: 'HorizontalListPage' });
         })
     }
     .width('100%')

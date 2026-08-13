@@ -1,5 +1,3 @@
-import { appNavStack } from '../common/AppNavStack';
-
 interface UserInfo {
   id: number;
   name: string;
@@ -13,6 +11,7 @@ export function UserListPageBuilder() {
 
 @Component
 export struct UserListPage {
+  appNavStack: NavPathStack = new NavPathStack()
   private readonly users: UserInfo[] = [
     { id: 1, name: '张三', desc: 'HarmonyOS 开发者' },
     { id: 2, name: '李四', desc: 'UI 设计师' },
@@ -37,7 +36,7 @@ export struct UserListPage {
             .backgroundColor(Color.Transparent)
             .fontColor('#007DFF')
             .onClick(() => {
-              appNavStack.pop();
+              this.appNavStack.pop();
             })
 
           Text($r('app.string.user_list_title'))
@@ -50,7 +49,12 @@ export struct UserListPage {
             .width(48)
         }
         .width('100%')
-        .padding({ left: 12, right: 12, top: 12, bottom: 12 })
+        .padding({
+          left: 12,
+          right: 12,
+          top: 12,
+          bottom: 12
+        })
 
         List() {
           ForEach(this.users, (user: UserInfo) => {
@@ -69,7 +73,12 @@ export struct UserListPage {
                 .alignItems(HorizontalAlign.Start)
               }
               .width('100%')
-              .padding({ left: 16, right: 16, top: 14, bottom: 14 })
+              .padding({
+                left: 16,
+                right: 16,
+                top: 14,
+                bottom: 14
+              })
             }
           }, (user: UserInfo) => user.id.toString())
         }
@@ -81,5 +90,8 @@ export struct UserListPage {
       .height('100%')
     }
     .hideTitleBar(true)
+    .onResult((ctx: NavDestinationContext) => {
+      this.appNavStack = ctx.pathStack
+    })
   }
 }

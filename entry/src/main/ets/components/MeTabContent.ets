@@ -1,8 +1,10 @@
-import { appNavStack } from '../common/AppNavStack';
 import { openWeChat } from '../common/WeChatLauncher';
 
 @Component
 export struct MeTabContent {
+  // 由 Index 传入，与 Navigation(this.appNavStack) 为同一实例
+  appNavStack: NavPathStack = new NavPathStack();
+
   build() {
     Column() {
       Text($r('app.string.me_title'))
@@ -18,7 +20,7 @@ export struct MeTabContent {
 
       Button($r('app.string.open_user_list'))
         .onClick(() => {
-          appNavStack.pushPath({ name: 'UserListPage' });
+          this.appNavStack.pushPath({ name: 'UserListPage' });
         })
     }
     .width('100%')
