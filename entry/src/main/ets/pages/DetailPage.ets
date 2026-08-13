@@ -1,5 +1,10 @@
 import { Info } from '../model/Info';
 
+@Builder
+export function DetailPageBuilder() {
+  DetailPageBuilder();
+}
+
 @ComponentV2
 export struct DetailPage {
   @Local params?: Info;
@@ -20,7 +25,8 @@ export struct DetailPage {
     }
     .hideTitleBar(true)
     .onReady((ctx: NavDestinationContext) => {
-      const param = ctx.pathInfo.param as Info;
+      const param = ctx.pathInfo.param as Info
+      const stack = ctx.pathStack
       if (param) {
         this.params = param;
       }

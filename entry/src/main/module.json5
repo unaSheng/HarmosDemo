@@ -45,6 +45,10 @@
           }
         ],
       }
-    ]
+    ],
+    "querySchemes": [
+      "weixin"
+    ],
+    "routerMap": "$profile:router_map"
   }
 }

@@ -37,6 +37,10 @@
       "value": "进入用户列表"
     },
     {
+      "name": "open_wechat",
+      "value": "打开微信"
+    },
+    {
       "name": "horizontal_list_title",
       "value": "横向列表"
     },

@@ -1,4 +1,5 @@
 import { appNavStack } from '../common/AppNavStack';
+import { openWeChat } from '../common/WeChatLauncher';
 
 @Component
 export struct MeTabContent {
@@ -8,6 +9,12 @@ export struct MeTabContent {
         .fontSize(24)
         .fontWeight(FontWeight.Medium)
         .margin({ bottom: 24 })
+
+      Button($r('app.string.open_wechat'))
+        .margin({ bottom: 12 })
+        .onClick(() => {
+          openWeChat(this.getUIContext());
+        })
 
       Button($r('app.string.open_user_list'))
         .onClick(() => {

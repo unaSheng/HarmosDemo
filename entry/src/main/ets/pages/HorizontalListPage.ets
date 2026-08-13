@@ -1,6 +1,11 @@
 import { Info } from '../model/Info';
 import { appNavStack } from '../common/AppNavStack';
 
+@Builder
+export function HorizontalListPageBuilder() {
+  HorizontalListPage();
+}
+
 @ComponentV2
 export struct HorizontalListPage {
   private readonly items: string[] = ['列表页 1', '列表页 2', '列表页 3', '列表页 4'];

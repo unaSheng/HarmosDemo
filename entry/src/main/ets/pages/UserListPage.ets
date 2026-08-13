@@ -6,6 +6,11 @@ interface UserInfo {
   desc: string;
 }
 
+@Builder
+export function UserListPageBuilder() {
+  UserListPage();
+}
+
 @Component
 export struct UserListPage {
   private readonly users: UserInfo[] = [
