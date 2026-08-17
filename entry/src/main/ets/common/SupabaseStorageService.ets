@@ -2,6 +2,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { fileIo } from '@kit.CoreFileKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { http } from '@kit.NetworkKit';
+import { isNetworkAvailable } from './NetworkHelper';
 import { SupabaseConfig } from './SupabaseConfig';
 
 export async function pickImageUri(): Promise<string | undefined> {
@@ -73,6 +74,11 @@ function _buildObjectPath(contentType: string): string {
 }
 
 export async function uploadImageToSupabase(uri: string): Promise<string | undefined> {
+  if (!isNetworkAvailable()) {
+    console.error('uploadImageToSupabase failed: network unavailable');
+    return undefined;
+  }
+
   const contentType = _resolveContentType(uri);
   const objectPath = _buildObjectPath(contentType);
   const fileBuffer = _readFileBuffer(uri);

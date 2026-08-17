@@ -1,3 +1,4 @@
+import { isNetworkAvailable } from '../common/NetworkHelper';
 import { pickImageUri, uploadImageToSupabase } from '../common/SupabaseStorageService';
 import { insertUserInfo, updateUserInfo } from '../common/SupabaseUserService';
 import { UserInfo } from '../model/UserInfo';
@@ -30,6 +31,11 @@ export struct EditUserInfoPage {
       return;
     }
 
+    if (!isNetworkAvailable()) {
+      this.avatarStatus = '网络不可用，请检查 WiFi 或蜂窝数据';
+      return;
+    }
+
     this.avatarPreviewUri = uri;
     this.avatarStatus = '上传中...';
 
@@ -49,6 +55,10 @@ export struct EditUserInfoPage {
     }
     if (this.nickname.trim().length === 0) {
       this.saveStatus = '请输入昵称';
+      return;
+    }
+    if (!isNetworkAvailable()) {
+      this.saveStatus = '网络不可用，请检查 WiFi 或蜂窝数据';
       return;
     }
 

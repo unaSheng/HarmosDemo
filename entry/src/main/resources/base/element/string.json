@@ -58,7 +58,11 @@
     },
     {
       "name": "internet_permission_reason",
-      "value": "用于上传图片到 Supabase 服务器"
+      "value": "用于通过 WiFi 或蜂窝数据访问网络，上传图片和同步用户资料"
+    },
+    {
+      "name": "network_permission_reason",
+      "value": "用于检测 WiFi 和蜂窝数据连接状态，确保网络请求正常"
     },
     {
       "name": "edit_user_info",

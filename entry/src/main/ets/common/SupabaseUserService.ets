@@ -1,6 +1,7 @@
 import { BusinessError } from '@kit.BasicServicesKit';
 import { http } from '@kit.NetworkKit';
 import { UserInfo, UserInfoRecord } from '../model/UserInfo';
+import { isNetworkAvailable } from './NetworkHelper';
 import { SupabaseConfig } from './SupabaseConfig';
 
 function buildHeaders(): Record<string, string> {
@@ -12,6 +13,11 @@ function buildHeaders(): Record<string, string> {
 }
 
 export async function insertUserInfo(user: UserInfo): Promise<UserInfo | undefined> {
+  if (!isNetworkAvailable()) {
+    console.error('insertUserInfo failed: network unavailable');
+    return undefined;
+  }
+
   const url = `${SupabaseConfig.PROJECT_URL}/rest/v1/user_info`;
   const httpRequest = http.createHttp();
   try {
@@ -46,6 +52,11 @@ export async function insertUserInfo(user: UserInfo): Promise<UserInfo | undefin
 }
 
 export async function updateUserInfo(user: UserInfo): Promise<UserInfo | undefined> {
+  if (!isNetworkAvailable()) {
+    console.error('updateUserInfo failed: network unavailable');
+    return undefined;
+  }
+
   const url = `${SupabaseConfig.PROJECT_URL}/rest/v1/user_info?id=eq.${user.id}`;
   const httpRequest = http.createHttp();
   try {
@@ -80,6 +91,11 @@ export async function updateUserInfo(user: UserInfo): Promise<UserInfo | undefin
 }
 
 export async function fetchUserInfoList(): Promise<UserInfo[]> {
+  if (!isNetworkAvailable()) {
+    console.error('fetchUserInfoList failed: network unavailable');
+    return [];
+  }
+
   const url =
     `${SupabaseConfig.PROJECT_URL}/rest/v1/user_info?select=*&order=created_at.desc`;
   const httpRequest = http.createHttp();
