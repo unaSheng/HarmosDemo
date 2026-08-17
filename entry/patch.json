@@ -1,0 +1,15 @@
+{
+  "app": {
+    "bundleName": "com.example.simpledemo",
+    "patchVersionCode": 2000007,
+    "versionCode": 1000000,
+    "versionName": "1.0.0",
+    "patchVersionName": "2000007"
+  },
+  "module": {
+    "name": "entry",
+    "type": "hotreload",
+    "deviceTypes": ["phone"],
+    "originalModuleHash": ""
+  }
+}

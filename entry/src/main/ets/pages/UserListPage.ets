@@ -30,32 +30,6 @@ export struct UserListPage {
   build() {
     NavDestination() {
       Column() {
-        Row() {
-          Button($r('app.string.back'))
-            .type(ButtonType.Normal)
-            .backgroundColor(Color.Transparent)
-            .fontColor('#007DFF')
-            .onClick(() => {
-              this.appNavStack.pop();
-            })
-
-          Text($r('app.string.user_list_title'))
-            .fontSize(18)
-            .fontWeight(FontWeight.Medium)
-            .layoutWeight(1)
-            .textAlign(TextAlign.Center)
-
-          Blank()
-            .width(48)
-        }
-        .width('100%')
-        .padding({
-          left: 12,
-          right: 12,
-          top: 12,
-          bottom: 12
-        })
-
         List() {
           ForEach(this.users, (user: UserInfo) => {
             ListItem() {
@@ -89,8 +63,8 @@ export struct UserListPage {
       .width('100%')
       .height('100%')
     }
-    .hideTitleBar(true)
-    .onResult((ctx: NavDestinationContext) => {
+    .title($r('app.string.user_list_title'))
+    .onReady((ctx: NavDestinationContext) => {
       this.appNavStack = ctx.pathStack
     })
   }
