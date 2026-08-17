@@ -1,10 +1,5 @@
 import { UserInfo } from '../model/UserInfo';
 
-@Builder
-export function UserDetailPageBuilder() {
-  UserDetailPage();
-}
-
 @Component
 export struct UserDetailPage {
   private pathStack?: NavPathStack;

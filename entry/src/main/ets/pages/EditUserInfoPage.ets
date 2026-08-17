@@ -2,11 +2,6 @@ import { pickImageUri, uploadImageToSupabase } from '../common/SupabaseStorageSe
 import { insertUserInfo, updateUserInfo } from '../common/SupabaseUserService';
 import { UserInfo } from '../model/UserInfo';
 
-@Builder
-export function EditUserInfoPageBuilder() {
-  EditUserInfoPage();
-}
-
 @Component
 export struct EditUserInfoPage {
   private pathStack?: NavPathStack;

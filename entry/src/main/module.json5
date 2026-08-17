@@ -86,7 +86,6 @@
         "name": "client_id",
         "value": "YOUR_AGC_CLIENT_ID"
       }
-    ],
-    "routerMap": "$profile:router_map"
+    ]
   }
 }

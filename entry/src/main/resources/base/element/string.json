@@ -29,20 +29,12 @@
       "value": "我的"
     },
     {
-      "name": "open_horizontal_list",
-      "value": "进入横向列表"
-    },
-    {
       "name": "open_user_list",
       "value": "进入用户列表"
     },
     {
       "name": "open_wechat",
       "value": "打开微信"
-    },
-    {
-      "name": "horizontal_list_title",
-      "value": "横向列表"
     },
     {
       "name": "user_list_title",
@@ -55,10 +47,6 @@
     {
       "name": "close",
       "value": "关闭"
-    },
-    {
-      "name": "detail_title",
-      "value": "详情"
     },
     {
       "name": "locate",

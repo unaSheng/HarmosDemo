@@ -7,7 +7,7 @@ export interface UserInfoRecord {
   created_at?: string;
 }
 
-export interface UserInfoInsertRecord {
+interface UserInfoInsertRecord {
   avatar_url: string;
   nickname: string;
   age: number;

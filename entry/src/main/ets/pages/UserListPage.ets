@@ -1,11 +1,6 @@
 import { fetchUserInfoList } from '../common/SupabaseUserService';
 import { UserInfo } from '../model/UserInfo';
 
-@Builder
-export function UserListPageBuilder() {
-  UserListPage();
-}
-
 @Component
 export struct UserListPage {
   appNavStack: NavPathStack = new NavPathStack();

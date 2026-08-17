@@ -29,12 +29,6 @@ export struct MeTabContent {
           .onClick(() => {
             this.appNavStack.pushPath({ name: 'UserListPage' });
           })
-
-        Button($r('app.string.open_horizontal_list'))
-          .margin({ bottom: 12 })
-          .onClick(() => {
-            this.appNavStack.pushPath({ name: 'HorizontalListPage' });
-          })
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 24, bottom: 24 })
