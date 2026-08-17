@@ -1,19 +1,19 @@
 {
   "routerMap": [
     {
-      "name": "basicDetailPage",
-      "pageSourceFile": "src/main/ets/pages/DetailPage.ets",
-      "buildFunction": "DetailPageBuilder"
-    },
-    {
-      "name": "basicHorizontalListPage",
-      "pageSourceFile": "src/main/ets/pages/HorizontalListPage.ets",
-      "buildFunction": "HorizontalListPageBuilder"
-    },
-    {
       "name": "basicUserListPage",
       "pageSourceFile": "src/main/ets/pages/UserListPage.ets",
       "buildFunction": "UserListPageBuilder"
+    },
+    {
+      "name": "basicEditUserInfoPage",
+      "pageSourceFile": "src/main/ets/pages/EditUserInfoPage.ets",
+      "buildFunction": "EditUserInfoPageBuilder"
+    },
+    {
+      "name": "basicUserDetailPage",
+      "pageSourceFile": "src/main/ets/pages/UserDetailPage.ets",
+      "buildFunction": "UserDetailPageBuilder"
     }
 
   ]

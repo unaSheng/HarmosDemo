@@ -67,6 +67,74 @@
     {
       "name": "location_permission_reason",
       "value": "用于在地图上展示您的当前位置"
+    },
+    {
+      "name": "internet_permission_reason",
+      "value": "用于上传图片到 Supabase 服务器"
+    },
+    {
+      "name": "edit_user_info",
+      "value": "编辑资料"
+    },
+    {
+      "name": "edit_user_info_title",
+      "value": "编辑个人信息"
+    },
+    {
+      "name": "add_avatar",
+      "value": "添加头像"
+    },
+    {
+      "name": "nickname",
+      "value": "昵称"
+    },
+    {
+      "name": "nickname_placeholder",
+      "value": "请输入昵称"
+    },
+    {
+      "name": "age",
+      "value": "年龄"
+    },
+    {
+      "name": "age_placeholder",
+      "value": "请输入年龄"
+    },
+    {
+      "name": "signature",
+      "value": "签名"
+    },
+    {
+      "name": "signature_placeholder",
+      "value": "请输入签名"
+    },
+    {
+      "name": "save",
+      "value": "保存"
+    },
+    {
+      "name": "cancel",
+      "value": "取消"
+    },
+    {
+      "name": "user_list_empty",
+      "value": "暂无用户，请先在「我」中编辑资料"
+    },
+    {
+      "name": "loading",
+      "value": "加载中..."
+    },
+    {
+      "name": "no_signature",
+      "value": "暂无签名"
+    },
+    {
+      "name": "user_detail_title",
+      "value": "用户详情"
+    },
+    {
+      "name": "edit",
+      "value": "编辑"
     }
   ]
 }

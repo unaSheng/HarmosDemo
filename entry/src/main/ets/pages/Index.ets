@@ -1,8 +1,8 @@
 import { HomeTabContent } from '../components/HomeTabContent';
 import { MeTabContent } from '../components/MeTabContent';
-import { HorizontalListPage } from './HorizontalListPage';
 import { UserListPage } from './UserListPage';
-import { DetailPage } from './DetailPage';
+import { UserDetailPage } from './UserDetailPage';
+import { EditUserInfoPage } from './EditUserInfoPage';
 
 @Entry
 @Component
@@ -25,12 +25,12 @@ struct Index {
 
   @Builder
   pageMap(name: string) {
-    if (name === 'HorizontalListPage') {
-      HorizontalListPage()
-    } else if (name === 'UserListPage') {
+    if (name === 'UserListPage') {
       UserListPage()
-    } else if (name === 'DetailPage') {
-      DetailPage()
+    } else if (name === 'UserDetailPage') {
+      UserDetailPage()
+    } else if (name === 'EditUserInfoPage') {
+      EditUserInfoPage()
     }
   }
 
@@ -38,7 +38,7 @@ struct Index {
     Navigation(this.appNavStack) {
       Tabs({ barPosition: BarPosition.End, index: this.currentIndex }) {
         TabContent() {
-          HomeTabContent({ appNavStack: this.appNavStack })
+          HomeTabContent()
         }
         .tabBar(this.tabBuilder($r('app.string.tab_home'), 0))
 

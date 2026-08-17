@@ -4,8 +4,6 @@ import { getCurrentLocation, requestLocationPermission } from '../common/Locatio
 
 @Component
 export struct HomeTabContent {
-  // 由 Index 传入，与 Navigation(this.appNavStack) 为同一实例
-  appNavStack: NavPathStack = new NavPathStack();
   @State locationText: string = '';
   private mapOptions?: mapCommon.MapOptions;
   private mapCallback?: AsyncCallback<map.MapComponentController>;
