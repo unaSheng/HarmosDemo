@@ -1,4 +1,3 @@
-import { openWeChat } from '../common/WeChatLauncher';
 
 @Component
 export struct MeTabContent {
@@ -18,12 +17,6 @@ export struct MeTabContent {
             this.appNavStack.pushPath({ name: 'EditUserInfoPage' });
           })
 
-        Button($r('app.string.open_wechat'))
-          .margin({ bottom: 12 })
-          .onClick(() => {
-            openWeChat(this.getUIContext());
-          })
-
         Button($r('app.string.open_user_list'))
           .margin({ bottom: 12 })
           .onClick(() => {
@@ -36,5 +29,6 @@ export struct MeTabContent {
     }
     .width('100%')
     .height('100%')
+    .backgroundColor('#FFFFFF')
   }
 }

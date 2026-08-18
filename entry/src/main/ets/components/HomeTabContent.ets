@@ -1,15 +1,19 @@
 import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
 import { MapComponent, map, mapCommon } from '@kit.MapKit';
+import { openBaiduMapWithLocation } from '../common/BaiduMapLauncher';
 import { getCurrentLocation, requestLocationPermission } from '../common/LocationHelper';
 
 @Component
 export struct HomeTabContent {
   @State locationText: string = '';
+  @State mapStatusText: string = '';
+  @State mapReady: boolean = false;
   private mapOptions?: mapCommon.MapOptions;
   private mapCallback?: AsyncCallback<map.MapComponentController>;
   private mapController?: map.MapComponentController;
 
   aboutToAppear(): void {
+    this.mapStatusText = '地图加载中...';
     this.mapOptions = {
       position: {
         target: {
@@ -22,11 +26,14 @@ export struct HomeTabContent {
     this.mapCallback = async (err, mapController) => {
       if (err) {
         console.error(`Map init failed, code=${err.code}, message=${err.message}`);
+        this.mapStatusText = `地图加载失败(${err.code})，请检查 Map Kit 配置`;
         return;
       }
       this.mapController = mapController;
       mapController.setMyLocationEnabled(true);
       mapController.getEventManager()?.on('mapLoad', () => {
+        this.mapReady = true;
+        this.mapStatusText = '';
         const markerOptions: mapCommon.MarkerOptions = {
           position: {
             latitude: 39.9042,
@@ -39,6 +46,12 @@ export struct HomeTabContent {
         });
       });
     };
+
+    requestLocationPermission(this.getUIContext()).then((granted: boolean) => {
+      if (!granted) {
+        this.locationText = '定位权限未授予，蓝点定位可能不可用';
+      }
+    });
   }
 
   private async locateCurrentPosition(): Promise<void> {
@@ -53,23 +66,18 @@ export struct HomeTabContent {
       this.locationText = '获取位置失败';
       return;
     }
-    if (!this.mapController) {
-      this.locationText = '地图尚未就绪';
-      return;
-    }
 
     this.locationText =
       `纬度: ${location.latitude.toFixed(6)}, 经度: ${location.longitude.toFixed(6)}`;
-    this.mapController.setMyLocation(location);
 
-    const cameraUpdate = map.newCameraPosition({
-      target: {
-        latitude: location.latitude,
-        longitude: location.longitude,
-      },
-      zoom: 16,
-    });
-    this.mapController.animateCamera(cameraUpdate, 1000);
+    const opened = await openBaiduMapWithLocation(
+      this.getUIContext(),
+      location.latitude,
+      location.longitude,
+    );
+    if (!opened) {
+      this.locationText = '未安装百度地图或打开失败';
+    }
   }
 
   build() {
@@ -80,7 +88,7 @@ export struct HomeTabContent {
           .fontWeight(FontWeight.Medium)
           .layoutWeight(1)
 
-        Button($r('app.string.locate'))
+        Button($r('app.string.open_baidu'))
           .fontSize(14)
           .height(32)
           .onClick(() => {
@@ -98,14 +106,39 @@ export struct HomeTabContent {
           .padding({ left: 12, right: 12, bottom: 4 })
       }
 
-      MapComponent({
-        mapOptions: this.mapOptions,
-        mapCallback: this.mapCallback,
-      })
-        .width('100%')
-        .layoutWeight(1)
+      Stack() {
+        MapComponent({
+          mapOptions: this.mapOptions,
+          mapCallback: this.mapCallback,
+        })
+          .width('100%')
+          .height('100%')
+
+        if (!this.mapReady && this.mapStatusText.length > 0) {
+          Column() {
+            Text(this.mapStatusText)
+              .fontSize(14)
+              .fontColor('#666666')
+              .textAlign(TextAlign.Center)
+              .margin({ bottom: 8 })
+
+            Text($r('app.string.map_setup_hint'))
+              .fontSize(12)
+              .fontColor('#999999')
+              .textAlign(TextAlign.Center)
+              .padding({ left: 24, right: 24 })
+          }
+          .width('100%')
+          .height('100%')
+          .justifyContent(FlexAlign.Center)
+          .backgroundColor('#F5F5F5')
+        }
+      }
+      .width('100%')
+      .layoutWeight(1)
     }
     .width('100%')
     .height('100%')
+    .backgroundColor('#FFFFFF')
   }
 }

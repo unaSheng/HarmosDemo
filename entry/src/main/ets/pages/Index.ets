@@ -47,15 +47,18 @@ struct Index {
         }
         .tabBar(this.tabBuilder($r('app.string.tab_me'), 1))
       }
+      .scrollable(false)
       .width('100%')
       .height('100%')
       .barHeight(56)
       .onChange((index: number) => {
         this.currentIndex = index;
       })
+      .backgroundColor('#FFFFFF')
     }
     .mode(NavigationMode.Stack)
     .hideTitleBar(true)
+    .backgroundColor('#FFFFFF')
     .navDestination(this.pageMap)
   }
 }

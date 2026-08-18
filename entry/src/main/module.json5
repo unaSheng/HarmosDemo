@@ -89,12 +89,12 @@
       }
     ],
     "querySchemes": [
-      "weixin"
+      "baidumap"
     ],
     "metadata": [
       {
         "name": "client_id",
-        "value": "YOUR_AGC_CLIENT_ID"
+        "value": "6917613915861757624"
       }
     ]
   }

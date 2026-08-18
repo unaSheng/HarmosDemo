@@ -1,6 +1,6 @@
 {
   "app": {
-    "bundleName": "com.example.simpledemo",
+    "bundleName": "com.una.simpledemo",
     "vendor": "example",
     "versionCode": 1000000,
     "versionName": "1.0.0",

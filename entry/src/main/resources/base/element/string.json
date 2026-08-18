@@ -33,10 +33,6 @@
       "value": "进入用户列表"
     },
     {
-      "name": "open_wechat",
-      "value": "打开微信"
-    },
-    {
       "name": "user_list_title",
       "value": "用户列表"
     },
@@ -49,8 +45,12 @@
       "value": "关闭"
     },
     {
-      "name": "locate",
-      "value": "定位"
+      "name": "open_baidu",
+      "value": "打开百度"
+    },
+    {
+      "name": "map_setup_hint",
+      "value": "请在 AGC 开通 Map Kit，确认 client_id 与包名一致，并配置签名 SHA256 指纹后重装应用"
     },
     {
       "name": "location_permission_reason",

@@ -142,6 +142,7 @@ export struct UserDetailPage {
       }
       .width('100%')
       .height('100%')
+      .backgroundColor('#FFFFFF')
     }
     .hideTitleBar(true)
     .onReady((ctx: NavDestinationContext) => {

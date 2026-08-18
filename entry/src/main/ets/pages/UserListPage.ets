@@ -110,6 +110,7 @@ export struct UserListPage {
       }
       .width('100%')
       .height('100%')
+      .backgroundColor('#FFFFFF')
     }
     .title($r('app.string.user_list_title'))
     .onReady((ctx: NavDestinationContext) => {
