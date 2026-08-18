@@ -5,7 +5,6 @@ import { getCurrentLocation, requestLocationPermission } from '../common/Locatio
 
 @Component
 export struct HomeTabContent {
-  @State locationText: string = '';
   @State mapStatusText: string = '';
   @State mapReady: boolean = false;
   private mapOptions?: mapCommon.MapOptions;
@@ -47,28 +46,21 @@ export struct HomeTabContent {
       });
     };
 
-    requestLocationPermission(this.getUIContext()).then((granted: boolean) => {
-      if (!granted) {
-        this.locationText = '定位权限未授予，蓝点定位可能不可用';
-      }
-    });
+    requestLocationPermission(this.getUIContext());
   }
 
   private async locateCurrentPosition(): Promise<void> {
     const granted = await requestLocationPermission(this.getUIContext());
     if (!granted) {
-      this.locationText = '定位权限未授予';
+      console.error('定位权限未授予');
       return;
     }
 
     const location = await getCurrentLocation();
     if (!location) {
-      this.locationText = '获取位置失败';
+      console.error('获取位置失败');
       return;
     }
-
-    this.locationText =
-      `纬度: ${location.latitude.toFixed(6)}, 经度: ${location.longitude.toFixed(6)}`;
 
     const opened = await openBaiduMapWithLocation(
       this.getUIContext(),
@@ -76,66 +68,49 @@ export struct HomeTabContent {
       location.longitude,
     );
     if (!opened) {
-      this.locationText = '未安装百度地图或打开失败';
+      console.error('未安装百度地图或打开失败');
     }
   }
 
   build() {
-    Column() {
-      Row() {
-        Text($r('app.string.home_title'))
-          .fontSize(18)
-          .fontWeight(FontWeight.Medium)
-          .layoutWeight(1)
+    Stack({ alignContent: Alignment.TopEnd }) {
+      MapComponent({
+        mapOptions: this.mapOptions,
+        mapCallback: this.mapCallback,
+      })
+        .width('100%')
+        .height('100%')
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
 
-        Button($r('app.string.open_baidu'))
-          .fontSize(14)
-          .height(32)
-          .onClick(() => {
-            this.locateCurrentPosition();
-          })
-      }
-      .width('100%')
-      .padding({ left: 12, right: 12, top: 8, bottom: 8 })
-
-      if (this.locationText.length > 0) {
-        Text(this.locationText)
-          .fontSize(12)
-          .fontColor('#666666')
-          .width('100%')
-          .padding({ left: 12, right: 12, bottom: 4 })
-      }
-
-      Stack() {
-        MapComponent({
-          mapOptions: this.mapOptions,
-          mapCallback: this.mapCallback,
+      Button($r('app.string.open_baidu'))
+        .fontSize(14)
+        .height(32)
+        .margin({ top: 12, right: 12 })
+        .onClick(() => {
+          this.locateCurrentPosition();
         })
-          .width('100%')
-          .height('100%')
 
-        if (!this.mapReady && this.mapStatusText.length > 0) {
-          Column() {
-            Text(this.mapStatusText)
-              .fontSize(14)
-              .fontColor('#666666')
-              .textAlign(TextAlign.Center)
-              .margin({ bottom: 8 })
+      if (!this.mapReady && this.mapStatusText.length > 0) {
+        Column() {
+          Text(this.mapStatusText)
+            .fontSize(14)
+            .fontColor('#666666')
+            .textAlign(TextAlign.Center)
+            .margin({ bottom: 8 })
 
-            Text($r('app.string.map_setup_hint'))
-              .fontSize(12)
-              .fontColor('#999999')
-              .textAlign(TextAlign.Center)
-              .padding({ left: 24, right: 24 })
-          }
-          .width('100%')
-          .height('100%')
-          .justifyContent(FlexAlign.Center)
-          .backgroundColor('#F5F5F5')
+          Text($r('app.string.map_setup_hint'))
+            .fontSize(12)
+            .fontColor('#999999')
+            .textAlign(TextAlign.Center)
+            .padding({ left: 24, right: 24 })
         }
+        .width('100%')
+        .height('100%')
+        .justifyContent(FlexAlign.Center)
+        .backgroundColor('#F5F5F5')
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
       }
-      .width('100%')
-      .layoutWeight(1)
+
     }
     .width('100%')
     .height('100%')

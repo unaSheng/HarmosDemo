@@ -11,13 +11,15 @@ struct Index {
   appNavStack: NavPathStack = new NavPathStack();
 
   @Builder
-  tabBuilder(title: Resource, index: number) {
-    Column() {
+  tabBuilder(icon: Resource, selectedIcon: Resource, title: Resource, index: number) {
+    Row({space: 2}) {
+      SymbolGlyph(this.currentIndex == index ? selectedIcon : icon)
       Text(title)
         .fontSize(14)
-        .fontColor(this.currentIndex === index ? '#007DFF' : '#666666')
         .fontWeight(this.currentIndex === index ? FontWeight.Medium : FontWeight.Normal)
     }
+    .opacity(this.currentIndex == index ? 1 : 0.5)
+    .align(Alignment.Center)
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Center)
@@ -40,12 +42,13 @@ struct Index {
         TabContent() {
           HomeTabContent()
         }
-        .tabBar(this.tabBuilder($r('app.string.tab_home'), 0))
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
+        .tabBar(this.tabBuilder($r('sys.symbol.house'), $r('sys.symbol.house_fill'), $r('app.string.tab_home'), 0))
 
         TabContent() {
           MeTabContent({ appNavStack: this.appNavStack })
         }
-        .tabBar(this.tabBuilder($r('app.string.tab_me'), 1))
+        .tabBar(this.tabBuilder($r('sys.symbol.person_2'), $r('sys.symbol.person_2_fill'), $r('app.string.tab_me'), 1))
       }
       .scrollable(false)
       .width('100%')

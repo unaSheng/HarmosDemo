@@ -6,11 +6,6 @@ export struct MeTabContent {
   build() {
     Scroll() {
       Column() {
-        Text($r('app.string.me_title'))
-          .fontSize(24)
-          .fontWeight(FontWeight.Medium)
-          .margin({ bottom: 16 })
-
         Button($r('app.string.edit_user_info'))
           .margin({ bottom: 12 })
           .onClick(() => {
