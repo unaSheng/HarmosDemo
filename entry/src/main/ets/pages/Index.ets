@@ -3,6 +3,7 @@ import { MeTabContent } from '../components/MeTabContent';
 import { UserListPage } from './UserListPage';
 import { UserDetailPage } from './UserDetailPage';
 import { EditUserInfoPage } from './EditUserInfoPage';
+import { TestPage } from './TestPage';
 
 @Entry
 @Component
@@ -33,6 +34,8 @@ struct Index {
       UserDetailPage()
     } else if (name === 'EditUserInfoPage') {
       EditUserInfoPage()
+    } else if (name === 'TestPage') {
+      TestPage()
     }
   }
 

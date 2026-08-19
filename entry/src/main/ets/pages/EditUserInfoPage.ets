@@ -1,14 +1,22 @@
+import { display } from '@kit.ArkUI';
 import { isNetworkAvailable } from '../common/NetworkHelper';
 import { pickImageUri, uploadImageToSupabase } from '../common/SupabaseStorageService';
 import { insertUserInfo, updateUserInfo } from '../common/SupabaseUserService';
 import { UserInfo } from '../model/UserInfo';
 
+const PANEL_HEIGHT_RATIO: number = 0.58;
+const PANEL_SHOW_DURATION: number = 300;
+const PANEL_HIDE_DURATION: number = 250;
+const PANEL_TOP_RADIUS: number = 20;
+const MASK_TARGET_OPACITY: number = 1;
+
 @Component
 export struct EditUserInfoPage {
   private pathStack?: NavPathStack;
+  @State panelTranslateY: number = 0;
+  @State maskOpacity: number = 0;
   @State avatarUrl: string = '';
   @State avatarPreviewUri: string = '';
-  @State avatarStatus: string = '';
   @State nickname: string = '';
   @State ageText: string = '';
   @State signature: string = '';
@@ -30,23 +38,8 @@ export struct EditUserInfoPage {
     if (!uri) {
       return;
     }
-
-    if (!isNetworkAvailable()) {
-      this.avatarStatus = '网络不可用，请检查 WiFi 或蜂窝数据';
-      return;
-    }
-
     this.avatarPreviewUri = uri;
-    this.avatarStatus = '上传中...';
-
-    const publicUrl = await uploadImageToSupabase(uri);
-    if (!publicUrl) {
-      this.avatarStatus = '上传失败';
-      return;
-    }
-
-    this.avatarUrl = publicUrl;
-    this.avatarStatus = '';
+    this.saveStatus = '';
   }
 
   private async handleSave(): Promise<void> {
@@ -62,15 +55,29 @@ export struct EditUserInfoPage {
       return;
     }
 
+    this.isSaving = true;
+    this.saveStatus = '';
+
+    let finalAvatarUrl = this.avatarUrl;
+    if (this.avatarPreviewUri.length > 0) {
+      this.saveStatus = '上传头像中...';
+      const publicUrl = await uploadImageToSupabase(this.avatarPreviewUri);
+      if (!publicUrl) {
+        this.isSaving = false;
+        this.saveStatus = '头像上传失败，请检查网络';
+        return;
+      }
+      finalAvatarUrl = publicUrl;
+    }
+
     const parsedAge = Number.parseInt(this.ageText, 10);
     const user = new UserInfo();
     user.id = this.editingUserId;
-    user.avatarUrl = this.avatarUrl;
+    user.avatarUrl = finalAvatarUrl;
     user.nickname = this.nickname.trim();
     user.age = Number.isNaN(parsedAge) ? 0 : parsedAge;
     user.signature = this.signature.trim();
 
-    this.isSaving = true;
     this.saveStatus = '保存中...';
 
     let result: UserInfo | undefined = undefined;
@@ -87,18 +94,51 @@ export struct EditUserInfoPage {
     }
 
     this.saveStatus = '';
-    this.pathStack?.pop(result);
+    this.closePage(result);
+  }
+
+  private getPanelOffset(): number {
+    return px2vp(display.getDefaultDisplaySync().height) * PANEL_HEIGHT_RATIO;
+  }
+
+  private showPanel(): void {
+    animateTo({
+      duration: PANEL_SHOW_DURATION,
+      curve: Curve.EaseOut,
+    }, () => {
+      this.maskOpacity = MASK_TARGET_OPACITY;
+      this.panelTranslateY = 0;
+    });
+  }
+
+  private closePage(result?: UserInfo): void {
+    animateTo({
+      duration: PANEL_HIDE_DURATION,
+      curve: Curve.EaseIn,
+      onFinish: () => {
+        if (result) {
+          this.pathStack?.pop(result);
+        } else {
+          this.pathStack?.pop();
+        }
+      },
+    }, () => {
+      this.maskOpacity = 0;
+      this.panelTranslateY = this.getPanelOffset();
+    });
   }
 
   build() {
     NavDestination() {
-      Column() {
-        Blank()
-          .layoutWeight(1)
+      Stack({ alignContent: Alignment.Bottom }) {
+        Column()
           .width('100%')
-          .backgroundColor('#66000000')
+          .height('100%')
+          .backgroundColor('#30000000')
+          .opacity(this.maskOpacity)
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
           .onClick(() => {
-            this.pathStack?.pop();
+            this.closePage();
           })
 
         Column() {
@@ -110,32 +150,29 @@ export struct EditUserInfoPage {
             .margin({ top: 8, bottom: 12 })
 
           Row() {
-            Text($r('app.string.edit_user_info_title'))
-              .fontSize(18)
-              .fontWeight(FontWeight.Medium)
-              .layoutWeight(1)
-
-            Button($r('app.string.close'))
-              .type(ButtonType.Normal)
-              .backgroundColor(Color.Transparent)
-              .fontColor('#666666')
-              .fontSize(14)
-              .onClick(() => {
-                this.pathStack?.pop();
-              })
+            Button({ type: ButtonType.Normal }) {
+              SymbolGlyph($r('sys.symbol.checkmark'))
+            }
+            .type(ButtonType.Normal)
+            .backgroundColor(Color.Transparent)
+            .width(40)
+            .height(40)
+            .onClick(() => {
+              this.closePage();
+            })
           }
           .width('100%')
           .margin({ bottom: 16 })
 
           Column() {
-            if (this.avatarUrl.length > 0) {
-              Image(this.avatarUrl)
+            if (this.avatarPreviewUri.length > 0) {
+              Image(this.avatarPreviewUri)
                 .width(72)
                 .height(72)
                 .borderRadius(36)
                 .objectFit(ImageFit.Cover)
-            } else if (this.avatarPreviewUri.length > 0) {
-              Image(this.avatarPreviewUri)
+            } else if (this.avatarUrl.length > 0) {
+              Image(this.avatarUrl)
                 .width(72)
                 .height(72)
                 .borderRadius(36)
@@ -157,13 +194,6 @@ export struct EditUserInfoPage {
               .fontSize(13)
               .fontColor('#007DFF')
               .margin({ top: 8 })
-
-            if (this.avatarStatus.length > 0) {
-              Text(this.avatarStatus)
-                .fontSize(12)
-                .fontColor('#666666')
-                .margin({ top: 4 })
-            }
           }
           .width('100%')
           .alignItems(HorizontalAlign.Center)
@@ -238,7 +268,7 @@ export struct EditUserInfoPage {
               .margin({ right: 8 })
               .enabled(!this.isSaving)
               .onClick(() => {
-                this.pathStack?.pop();
+                this.closePage();
               })
 
             Button($r('app.string.save'))
@@ -251,23 +281,31 @@ export struct EditUserInfoPage {
           .width('100%')
         }
         .width('100%')
-        .height('58%')
+        .height(`${PANEL_HEIGHT_RATIO * 100}%`)
         .padding({ left: 16, right: 16, bottom: 24 })
         .backgroundColor(Color.White)
-        .borderRadius({ topLeft: 16, topRight: 16 })
+        .borderRadius({ topLeft: PANEL_TOP_RADIUS, topRight: PANEL_TOP_RADIUS })
+        .clip(true)
+        .translate({ y: this.panelTranslateY })
       }
       .width('100%')
       .height('100%')
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
     }
     .mode(NavDestinationMode.DIALOG)
-    .systemTransition(NavigationSystemTransitionType.SLIDE_BOTTOM)
+    .systemTransition(NavigationSystemTransitionType.NONE)
     .hideTitleBar(true)
     .onReady((ctx: NavDestinationContext) => {
       this.pathStack = ctx.pathStack;
+      this.panelTranslateY = this.getPanelOffset();
+      this.maskOpacity = 0;
       const param = ctx.pathInfo.param as UserInfo;
       if (param) {
         this.fillForm(param);
       }
+    })
+    .onShown(() => {
+      this.showPanel();
     })
   }
 }

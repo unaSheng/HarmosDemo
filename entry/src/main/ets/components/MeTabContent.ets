@@ -17,6 +17,11 @@ export struct MeTabContent {
           .onClick(() => {
             this.appNavStack.pushPath({ name: 'UserListPage' });
           })
+
+        Button('调试页')
+          .onClick(() => {
+            this.appNavStack.pushPath({name: 'TestPage'})
+          })
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 24, bottom: 24 })
