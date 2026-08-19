@@ -10,7 +10,16 @@
   "modules": {
     ".": {
       "name": "",
-      "dependencies": {},
+      "dependencies": {
+        "@pura/harmony-dialog": {
+          "specifier": "^1.1.8",
+          "version": "1.1.8"
+        },
+        "@abner/refresh": {
+          "specifier": "^2.0.1",
+          "version": "2.0.1"
+        }
+      },
       "devDependencies": {
         "@ohos/hypium": {
           "specifier": "1.0.24",
@@ -29,12 +38,41 @@
     }
   },
   "packages": {
+    "@pura/harmony-dialog@1.1.8": {
+      "integrity": "sha512-IG2BJti8LBvJvkAD7yLwk6F2D66BGYPt6mae2yqAB9hMU5HnOTslWJbrReN9qPQl+ssIjSahMC7aJexEFYm5Dw==",
+      "storePath": "oh_modules/.ohpm/@pura+harmony-dialog@1.1.8",
+      "dependencies": {
+        "@pura/spinkit": "1.0.6"
+      },
+      "dynamicDependencies": {},
+      "dev": false,
+      "dynamic": false,
+      "maskedByOverrideDependencyMap": false
+    },
+    "@abner/refresh@2.0.1": {
+      "integrity": "sha512-Oz+hb/FBkrQEBHhRj11DwquPhnNo9p2jHgUDuvJbfCMcvkErwoblcgqwyH7AJ0DkPtPzviSXUbNfRYGrl45Tyg==",
+      "storePath": "oh_modules/.ohpm/@abner+refresh@2.0.1",
+      "dependencies": {},
+      "dynamicDependencies": {},
+      "dev": false,
+      "dynamic": false,
+      "maskedByOverrideDependencyMap": false
+    },
     "@ohos/hypium@1.0.24": {
       "integrity": "sha512-3dCqc+BAR5LqEGG2Vtzi8O3r7ci/3fYU+FWjwvUobbfko7DUnXGOccaror0yYuUhJfXzFK0aZNMGSnXaTwEnbw==",
       "storePath": "oh_modules/.ohpm/@ohos+hypium@1.0.24",
       "dependencies": {},
       "dynamicDependencies": {},
       "dev": true,
+      "dynamic": false,
+      "maskedByOverrideDependencyMap": false
+    },
+    "@pura/spinkit@1.0.6": {
+      "integrity": "sha512-CwrAo/YiNAVwIT7q4exsFF8xdoXGTFsj/FfSaFC/m6LbdNbmPrYYYUk9VaZPNxRxjKBHOt6Gf9PkfSzHPdUdow==",
+      "storePath": "oh_modules/.ohpm/@pura+spinkit@1.0.6",
+      "dependencies": {},
+      "dynamicDependencies": {},
+      "dev": false,
       "dynamic": false,
       "maskedByOverrideDependencyMap": false
     }

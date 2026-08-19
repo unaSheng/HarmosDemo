@@ -2,8 +2,11 @@
   "modelVersion": "6.0.1",
   "description": "Please describe the basic information.",
   "dependencies": {
+    "@pura/harmony-dialog": "^1.1.8",
+    "@abner/refresh": "^2.0.1"
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.24"
-  }
+  },
+  "dynamicDependencies": {}
 }

@@ -55,6 +55,10 @@ export async function updateUserInfo(user: UserInfo): Promise<UserInfo | undefin
     console.error('updateUserInfo failed: network unavailable');
     return undefined;
   }
+  if (user.id <= 0) {
+    console.error(`updateUserInfo failed: invalid user id=${user.id}`);
+    return undefined;
+  }
 
   const url = `${SupabaseConfig.PROJECT_URL}/rest/v1/user_info?id=eq.${user.id}`;
   const httpRequest = http.createHttp();
@@ -62,7 +66,7 @@ export async function updateUserInfo(user: UserInfo): Promise<UserInfo | undefin
     const response = await httpRequest.request(url, {
       method: http.RequestMethod.PUT,
       header: buildHeaders('return=representation'),
-      extraData: JSON.stringify(user.toInsertRecord()),
+      extraData: JSON.stringify(user.toUpdateRecord()),
       connectTimeout: 60000,
       readTimeout: 60000,
     });
@@ -79,6 +83,40 @@ export async function updateUserInfo(user: UserInfo): Promise<UserInfo | undefin
     const error = err as BusinessError;
     console.error(`updateUserInfo failed, code=${error.code}, message=${error.message}`);
     return undefined;
+  } finally {
+    httpRequest.destroy();
+  }
+}
+
+export async function deleteUserInfo(userId: number): Promise<boolean> {
+  if (!isNetworkAvailable()) {
+    console.error('deleteUserInfo failed: network unavailable');
+    return false;
+  }
+
+  const url = `${SupabaseConfig.PROJECT_URL}/rest/v1/user_info?id=eq.${userId}`;
+  const httpRequest = http.createHttp();
+  try {
+    const response = await httpRequest.request(url, {
+      method: http.RequestMethod.DELETE,
+      header: buildHeaders('return=representation'),
+      connectTimeout: 60000,
+      readTimeout: 60000,
+    });
+    if (response.responseCode !== 200) {
+      console.error(`deleteUserInfo failed, code=${response.responseCode}, body=${response.result}`);
+      return false;
+    }
+    const records = JSON.parse(response.result as string) as UserInfoRecord[];
+    if (records.length === 0) {
+      console.error('deleteUserInfo failed: no row deleted, check RLS delete policy');
+      return false;
+    }
+    return true;
+  } catch (err) {
+    const error = err as BusinessError;
+    console.error(`deleteUserInfo failed, code=${error.code}, message=${error.message}`);
+    return false;
   } finally {
     httpRequest.destroy();
   }

@@ -81,10 +81,10 @@ async function testConcurrentFunc(): Promise<void> {
   });
 }
 
-@Component
+@ComponentV2
 export struct TestPage {
   private pathStack?: NavPathStack;
-  @State message: string = 'Hello World';
+  @Local message: string = 'Hello World';
 
   build() {
     NavDestination() {

@@ -3,10 +3,10 @@ import { MapComponent, map, mapCommon } from '@kit.MapKit';
 import { openBaiduMapWithLocation } from '../common/BaiduMapLauncher';
 import { getCurrentLocation, requestLocationPermission } from '../common/LocationHelper';
 
-@Component
+@ComponentV2
 export struct HomeTabContent {
-  @State mapStatusText: string = '';
-  @State mapReady: boolean = false;
+  @Local mapStatusText: string = '';
+  @Local mapReady: boolean = false;
   private mapOptions?: mapCommon.MapOptions;
   private mapCallback?: AsyncCallback<map.MapComponentController>;
   private mapController?: map.MapComponentController;

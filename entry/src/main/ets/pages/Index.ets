@@ -1,20 +1,21 @@
 import { HomeTabContent } from '../components/HomeTabContent';
 import { MeTabContent } from '../components/MeTabContent';
-import { UserListPage } from './UserListPage';
 import { UserDetailPage } from './UserDetailPage';
 import { EditUserInfoPage } from './EditUserInfoPage';
 import { TestPage } from './TestPage';
 
 @Entry
-@Component
+@ComponentV2
 struct Index {
-  @State currentIndex: number = 0;
+  @Local currentIndex: number = 0;
   appNavStack: NavPathStack = new NavPathStack();
 
   @Builder
   tabBuilder(icon: Resource, selectedIcon: Resource, title: Resource, index: number) {
-    Row({space: 2}) {
+    Row({ space: 2 }) {
       SymbolGlyph(this.currentIndex == index ? selectedIcon : icon)
+        .fontSize(18)
+        .fontWeight(this.currentIndex === index ? FontWeight.Medium : FontWeight.Normal)
       Text(title)
         .fontSize(14)
         .fontWeight(this.currentIndex === index ? FontWeight.Medium : FontWeight.Normal)
@@ -28,9 +29,7 @@ struct Index {
 
   @Builder
   pageMap(name: string) {
-    if (name === 'UserListPage') {
-      UserListPage()
-    } else if (name === 'UserDetailPage') {
+    if (name === 'UserDetailPage') {
       UserDetailPage()
     } else if (name === 'EditUserInfoPage') {
       EditUserInfoPage()

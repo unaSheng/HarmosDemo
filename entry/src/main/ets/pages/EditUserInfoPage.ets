@@ -1,4 +1,5 @@
 import { display } from '@kit.ArkUI';
+import { DialogHelper } from '@pura/harmony-dialog';
 import { isNetworkAvailable } from '../common/NetworkHelper';
 import { pickImageUri, uploadImageToSupabase } from '../common/SupabaseStorageService';
 import { insertUserInfo, updateUserInfo } from '../common/SupabaseUserService';
@@ -10,19 +11,20 @@ const PANEL_HIDE_DURATION: number = 250;
 const PANEL_TOP_RADIUS: number = 20;
 const MASK_TARGET_OPACITY: number = 1;
 
-@Component
+@ComponentV2
 export struct EditUserInfoPage {
   private pathStack?: NavPathStack;
-  @State panelTranslateY: number = 0;
-  @State maskOpacity: number = 0;
-  @State avatarUrl: string = '';
-  @State avatarPreviewUri: string = '';
-  @State nickname: string = '';
-  @State ageText: string = '';
-  @State signature: string = '';
-  @State saveStatus: string = '';
-  @State isSaving: boolean = false;
+  @Local panelTranslateY: number = 0;
+  @Local maskOpacity: number = 0;
+  @Local avatarUrl: string = '';
+  @Local avatarPreviewUri: string = '';
+  @Local nickname: string = '';
+  @Local ageText: string = '';
+  @Local signature: string = '';
+  @Local saveStatus: string = '';
+  @Local isSaving: boolean = false;
   private editingUserId: number = 0;
+  private loadingDialogId: string = '';
 
   private fillForm(user: UserInfo): void {
     this.editingUserId = user.id;
@@ -42,6 +44,41 @@ export struct EditUserInfoPage {
     this.saveStatus = '';
   }
 
+  private showSaveLoading(content: string): void {
+    this.loadingDialogId = DialogHelper.showLoadingDialog({
+      content,
+      autoCancel: false,
+      backCancel: false,
+    });
+  }
+
+  private updateSaveLoading(content: string): void {
+    if (this.loadingDialogId.length > 0) {
+      DialogHelper.updateLoading(this.loadingDialogId, content);
+    }
+  }
+
+  private hideSaveLoading(): void {
+    if (this.loadingDialogId.length > 0) {
+      DialogHelper.closeDialog(this.loadingDialogId);
+      this.loadingDialogId = '';
+    }
+  }
+
+  private showSaveResultToast(success: boolean, message: string): void {
+    if (success) {
+      DialogHelper.showToastTip({
+        message,
+        imageRes: $r('sys.media.ohos_ic_public_ok'),
+      });
+    } else {
+      DialogHelper.showToastTip({
+        message,
+        imageRes: $r('sys.media.ohos_ic_public_cancel'),
+      });
+    }
+  }
+
   private async handleSave(): Promise<void> {
     if (this.isSaving) {
       return;
@@ -57,14 +94,16 @@ export struct EditUserInfoPage {
 
     this.isSaving = true;
     this.saveStatus = '';
+    this.showSaveLoading('保存中...');
 
     let finalAvatarUrl = this.avatarUrl;
     if (this.avatarPreviewUri.length > 0) {
-      this.saveStatus = '上传头像中...';
+      this.updateSaveLoading('上传头像中...');
       const publicUrl = await uploadImageToSupabase(this.avatarPreviewUri);
       if (!publicUrl) {
+        this.hideSaveLoading();
         this.isSaving = false;
-        this.saveStatus = '头像上传失败，请检查网络';
+        this.showSaveResultToast(false, '头像上传失败，请检查网络');
         return;
       }
       finalAvatarUrl = publicUrl;
@@ -78,7 +117,7 @@ export struct EditUserInfoPage {
     user.age = Number.isNaN(parsedAge) ? 0 : parsedAge;
     user.signature = this.signature.trim();
 
-    this.saveStatus = '保存中...';
+    this.updateSaveLoading('保存中...');
 
     let result: UserInfo | undefined = undefined;
     if (this.editingUserId > 0) {
@@ -86,15 +125,19 @@ export struct EditUserInfoPage {
     } else {
       result = await insertUserInfo(user);
     }
+
+    this.hideSaveLoading();
     this.isSaving = false;
 
     if (!result) {
-      this.saveStatus = '保存失败，请检查网络';
+      this.showSaveResultToast(false, '保存失败，请检查网络');
       return;
     }
 
-    this.saveStatus = '';
-    this.closePage(result);
+    this.showSaveResultToast(true, '保存成功');
+    setTimeout(() => {
+      this.closePage(result);
+    }, 800);
   }
 
   private getPanelOffset(): number {
@@ -148,21 +191,6 @@ export struct EditUserInfoPage {
             .backgroundColor('#DDDDDD')
             .borderRadius(2)
             .margin({ top: 8, bottom: 12 })
-
-          Row() {
-            Button({ type: ButtonType.Normal }) {
-              SymbolGlyph($r('sys.symbol.checkmark'))
-            }
-            .type(ButtonType.Normal)
-            .backgroundColor(Color.Transparent)
-            .width(40)
-            .height(40)
-            .onClick(() => {
-              this.closePage();
-            })
-          }
-          .width('100%')
-          .margin({ bottom: 16 })
 
           Column() {
             if (this.avatarPreviewUri.length > 0) {
@@ -299,9 +327,9 @@ export struct EditUserInfoPage {
       this.pathStack = ctx.pathStack;
       this.panelTranslateY = this.getPanelOffset();
       this.maskOpacity = 0;
-      const param = ctx.pathInfo.param as UserInfo;
+      const param = ctx.pathInfo.param as UserInfo;;
       if (param) {
-        this.fillForm(param);
+        this.fillForm(UserInfo.fromPlain(param as ESObject));
       }
     })
     .onShown(() => {

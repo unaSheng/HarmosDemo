@@ -7,22 +7,32 @@ export interface UserInfoRecord {
   created_at?: string;
 }
 
-interface UserInfoInsertRecord {
-  avatar_url: string;
-  nickname: string;
-  age: number;
-  signature: string;
+interface UserInfoUpdateRecord extends UserInfoRecord {
+  id: number;
 }
 
+@ObservedV2
 export class UserInfo {
-  id: number = 0;
-  avatarUrl: string = '';
-  nickname: string = '';
-  age: number = 0;
-  signature: string = '';
+  @Trace id: number = 0;
+  @Trace avatarUrl: string = '';
+  @Trace nickname: string = '';
+  @Trace age: number = 0;
+  @Trace signature: string = '';
 
-  toInsertRecord(): UserInfoInsertRecord {
-    const record: UserInfoInsertRecord = {
+  toInsertRecord(): UserInfoRecord {
+    const record: UserInfoRecord = {
+      avatar_url: this.avatarUrl,
+      nickname: this.nickname,
+      age: this.age,
+      signature: this.signature,
+      id: this.id
+    };
+    return record;
+  }
+
+  toUpdateRecord(): UserInfoUpdateRecord {
+    const record: UserInfoUpdateRecord = {
+      id: this.id,
       avatar_url: this.avatarUrl,
       nickname: this.nickname,
       age: this.age,
@@ -38,6 +48,32 @@ export class UserInfo {
     user.nickname = record.nickname;
     user.age = record.age;
     user.signature = record.signature;
+    return user;
+  }
+
+  static fromPlain(plain: ESObject): UserInfo {
+    const user = new UserInfo();
+    const idValue: string = plain['id'] ?? plain['__ob_id'];
+    const avatarValue: string = plain['avatarUrl'] ?? plain['avatar_url'] ?? plain['__ob_avatarUrl'];
+    const nicknameValue: string = plain['nickname'] ?? plain['__ob_nickname'];
+    const ageValue: string = plain['age'] ?? plain['__ob_age'];
+    const signatureValue: string = plain['signature'] ?? plain['__ob_signature'];
+
+    if (typeof idValue === 'number') {
+      user.id = idValue;
+    }
+    if (typeof avatarValue === 'string') {
+      user.avatarUrl = avatarValue;
+    }
+    if (typeof nicknameValue === 'string') {
+      user.nickname = nicknameValue;
+    }
+    if (typeof ageValue === 'number') {
+      user.age = ageValue;
+    }
+    if (typeof signatureValue === 'string') {
+      user.signature = signatureValue;
+    }
     return user;
   }
 }

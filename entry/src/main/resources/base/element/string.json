@@ -119,6 +119,22 @@
     {
       "name": "edit",
       "value": "编辑"
+    },
+    {
+      "name": "delete_user",
+      "value": "删除用户"
+    },
+    {
+      "name": "delete_user_confirm",
+      "value": "确定删除该用户吗？"
+    },
+    {
+      "name": "delete_success",
+      "value": "删除成功"
+    },
+    {
+      "name": "delete_failed",
+      "value": "删除失败，请检查网络"
     }
   ]
 }
