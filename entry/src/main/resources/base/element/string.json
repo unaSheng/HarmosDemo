@@ -135,6 +135,14 @@
     {
       "name": "delete_failed",
       "value": "删除失败，请检查网络"
+    },
+    {
+      "name": "list_no_more",
+      "value": "没有更多了"
+    },
+    {
+      "name": "list_load_more",
+      "value": "上拉加载更多"
     }
   ]
 }

@@ -10,6 +10,8 @@ const PANEL_SHOW_DURATION: number = 300;
 const PANEL_HIDE_DURATION: number = 250;
 const PANEL_TOP_RADIUS: number = 20;
 const MASK_TARGET_OPACITY: number = 1;
+const DISMISS_DRAG_RATIO: number = 0.25;
+const PANEL_SNAP_BACK_DURATION: number = 200;
 
 @ComponentV2
 export struct EditUserInfoPage {
@@ -171,6 +173,39 @@ export struct EditUserInfoPage {
     });
   }
 
+  private updatePanelDrag(offsetY: number): void {
+    const panelHeight = this.getPanelOffset();
+    const dragOffset = Math.max(0, Math.min(offsetY, panelHeight));
+    this.panelTranslateY = dragOffset;
+    const progress = 1 - dragOffset / panelHeight;
+    this.maskOpacity = MASK_TARGET_OPACITY * progress;
+  }
+
+  private handlePanelPanUpdate(event: GestureEvent): void {
+    if (this.isSaving) {
+      return;
+    }
+    this.updatePanelDrag(event.offsetY);
+  }
+
+  private handlePanelPanEnd(): void {
+    if (this.isSaving) {
+      return;
+    }
+    const dismissThreshold = this.getPanelOffset() * DISMISS_DRAG_RATIO;
+    if (this.panelTranslateY >= dismissThreshold) {
+      this.closePage();
+      return;
+    }
+    animateTo({
+      duration: PANEL_SNAP_BACK_DURATION,
+      curve: Curve.EaseOut,
+    }, () => {
+      this.panelTranslateY = 0;
+      this.maskOpacity = MASK_TARGET_OPACITY;
+    });
+  }
+
   build() {
     NavDestination() {
       Stack({ alignContent: Alignment.Bottom }) {
@@ -185,12 +220,16 @@ export struct EditUserInfoPage {
           })
 
         Column() {
-          Row()
-            .width(40)
-            .height(4)
-            .backgroundColor('#DDDDDD')
-            .borderRadius(2)
-            .margin({ top: 8, bottom: 12 })
+          Column() {
+            Row()
+              .width(40)
+              .height(4)
+              .backgroundColor('#DDDDDD')
+              .borderRadius(2)
+          }
+          .width('100%')
+          .justifyContent(FlexAlign.Center)
+          .margin({ top: 5, bottom: 16 })
 
           Column() {
             if (this.avatarPreviewUri.length > 0) {
@@ -288,6 +327,8 @@ export struct EditUserInfoPage {
               .margin({ bottom: 8 })
           }
 
+          Blank()
+
           Row() {
             Button($r('app.string.cancel'))
               .layoutWeight(1)
@@ -315,6 +356,15 @@ export struct EditUserInfoPage {
         .borderRadius({ topLeft: PANEL_TOP_RADIUS, topRight: PANEL_TOP_RADIUS })
         .clip(true)
         .translate({ y: this.panelTranslateY })
+        .gesture(
+          PanGesture({ direction: PanDirection.Vertical, distance: 8 })
+            .onActionUpdate((event: GestureEvent) => {
+              this.handlePanelPanUpdate(event);
+            })
+            .onActionEnd(() => {
+              this.handlePanelPanEnd();
+            })
+        )
       }
       .width('100%')
       .height('100%')

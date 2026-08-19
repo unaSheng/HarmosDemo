@@ -122,14 +122,23 @@ export async function deleteUserInfo(userId: number): Promise<boolean> {
   }
 }
 
-export async function fetchUserInfoList(): Promise<UserInfo[]> {
+export interface UserInfoPageResult {
+  list: UserInfo[];
+  hasMore: boolean;
+}
+
+export async function fetchUserInfoPage(offset: number, limit: number): Promise<UserInfoPageResult | undefined> {
   if (!isNetworkAvailable()) {
-    console.error('fetchUserInfoList failed: network unavailable');
-    return [];
+    console.error('fetchUserInfoPage failed: network unavailable');
+    return undefined;
+  }
+  if (offset < 0 || limit <= 0) {
+    console.error(`fetchUserInfoPage failed: invalid offset=${offset}, limit=${limit}`);
+    return undefined;
   }
 
   const url =
-    `${SupabaseConfig.PROJECT_URL}/rest/v1/user_info?select=*&order=created_at.desc`;
+    `${SupabaseConfig.PROJECT_URL}/rest/v1/user_info?select=*&order=created_at.desc&limit=${limit}&offset=${offset}`;
   const httpRequest = http.createHttp();
   try {
     const response = await httpRequest.request(url, {
@@ -139,20 +148,32 @@ export async function fetchUserInfoList(): Promise<UserInfo[]> {
       readTimeout: 60000,
     });
     if (response.responseCode !== 200) {
-      console.error(`fetchUserInfoList failed, code=${response.responseCode}, body=${response.result}`);
-      return [];
+      console.error(`fetchUserInfoPage failed, code=${response.responseCode}, body=${response.result}`);
+      return undefined;
     }
     const records = JSON.parse(response.result as string) as UserInfoRecord[];
     const users: UserInfo[] = [];
     records.forEach((record: UserInfoRecord) => {
       users.push(UserInfo.fromRecord(record));
     });
-    return users;
+    const result: UserInfoPageResult = {
+      list: users,
+      hasMore: records.length === limit,
+    };
+    return result;
   } catch (err) {
     const error = err as BusinessError;
-    console.error(`fetchUserInfoList failed, code=${error.code}, message=${error.message}`);
-    return [];
+    console.error(`fetchUserInfoPage failed, code=${error.code}, message=${error.message}`);
+    return undefined;
   } finally {
     httpRequest.destroy();
   }
+}
+
+export async function fetchUserInfoList(): Promise<UserInfo[]> {
+  const page = await fetchUserInfoPage(0, 1000);
+  if (!page) {
+    return [];
+  }
+  return page.list;
 }

@@ -1,6 +1,8 @@
-import { fetchUserInfoList } from '../common/SupabaseUserService';
+import { fetchUserInfoPage } from '../common/SupabaseUserService';
 import { UserInfo } from '../model/UserInfo';
-import { ListAttr, ListView, RefreshController } from '@abner/refresh';
+import { ListAttr, ListView, LoadMoreFooterAttr, RefreshController } from '@abner/refresh';
+
+const PAGE_SIZE: number = 10;
 
 @ComponentV2
 export struct UserListPage {
@@ -9,28 +11,97 @@ export struct UserListPage {
   @Local users: UserInfo[] = [];
   @Local isEmpty: boolean = false;
   @Local isFirstLoading: boolean = true;
+  @Local hasMore: boolean = true;
+  @Local isLoadingMore: boolean = false;
   private refreshController: RefreshController = new RefreshController();
 
   aboutToAppear(): void {
-    this.loadUsers(false);
+    this.loadFirstPage(false);
   }
 
   @Monitor('refreshKey')
   onRefreshKeyChange(): void {
-    this.loadUsers(false);
+    this.loadFirstPage(false);
   }
 
   private handleRefresh(): void {
-    this.loadUsers(true);
+    this.loadFirstPage(true);
   }
 
-  private async loadUsers(fromPullRefresh: boolean): Promise<void> {
-    const list = await fetchUserInfoList();
-    this.users = list;
-    this.isEmpty = list.length === 0;
+  private handleLoadMore(): void {
+    this.loadMorePage();
+  }
+
+  private updateLoadMoreFooter(): void {
+    if (this.isFirstLoading || this.isEmpty) {
+      return;
+    }
+    if (this.hasMore) {
+      this.refreshController.finishLoadMore(false);
+      return;
+    }
+    this.refreshController.finishLoadMoreFixedBottom(true);
+  }
+
+  private resetPaginationState(): void {
+    this.hasMore = true;
+    this.isLoadingMore = false;
+    this.refreshController.finishLoadMore(false);
+  }
+
+  private async loadFirstPage(fromPullRefresh: boolean): Promise<void> {
+    this.resetPaginationState();
+    const result = await fetchUserInfoPage(0, PAGE_SIZE);
+    if (!result) {
+      this.isFirstLoading = false;
+      if (fromPullRefresh) {
+        this.refreshController.finishRefresh();
+      }
+      return;
+    }
+
+    this.users = result.list;
+    this.hasMore = result.hasMore;
+    this.isEmpty = result.list.length === 0;
     this.isFirstLoading = false;
+
     if (fromPullRefresh) {
       this.refreshController.finishRefresh();
+    }
+    this.updateLoadMoreFooter();
+  }
+
+  private async loadMorePage(): Promise<void> {
+    if (this.isLoadingMore) {
+      return;
+    }
+    if (!this.hasMore) {
+      this.updateLoadMoreFooter();
+      return;
+    }
+
+    this.isLoadingMore = true;
+    const result = await fetchUserInfoPage(this.users.length, PAGE_SIZE);
+    this.isLoadingMore = false;
+
+    if (!result) {
+      this.refreshController.finishLoadMore(false);
+      return;
+    }
+
+    const mergedUsers: UserInfo[] = [];
+    this.users.forEach((user: UserInfo) => {
+      mergedUsers.push(user);
+    });
+    result.list.forEach((user: UserInfo) => {
+      mergedUsers.push(user);
+    });
+    this.users = mergedUsers;
+    this.hasMore = result.hasMore;
+    if (this.hasMore) {
+      this.refreshController.finishLoadMore(false);
+    } else {
+      this.refreshController.finishLoadMoreFixedBottom(true);
     }
   }
 
@@ -104,7 +175,7 @@ export struct UserListPage {
         name: 'UserDetailPage',
         param: item as UserInfo,
         onPop: () => {
-          this.loadUsers(false);
+          this.loadFirstPage(false);
         },
       });
     })
@@ -144,7 +215,17 @@ export struct UserListPage {
       onRefresh: () => {
         this.handleRefresh();
       },
-      enableLoadMore: false,
+      onLoadMore: () => {
+        this.handleLoadMore();
+      },
+      loadMoreFooterAttribute: (attribute: LoadMoreFooterAttr) => {
+        attribute.footerPullingText = $r('app.string.list_load_more');
+        attribute.footerReleaseText = $r('app.string.list_load_more');
+        attribute.footerLoadingText = $r('app.string.loading');
+        attribute.footerNothingText = $r('app.string.list_no_more');
+        attribute.fontColor = '#999999';
+        attribute.fontSize = 14;
+      },
       showLoadingLayout: this.isFirstLoading,
       loadingLayout: () => {
         this.loadingLayoutBuilder();
