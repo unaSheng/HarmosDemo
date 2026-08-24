@@ -1,4 +1,6 @@
-import { display } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { display, window } from '@kit.ArkUI';
 import { DialogHelper } from '@pura/harmony-dialog';
 import { isNetworkAvailable } from '../common/NetworkHelper';
 import { pickImageUri, uploadImageToSupabase } from '../common/SupabaseStorageService';
@@ -12,6 +14,11 @@ const PANEL_TOP_RADIUS: number = 20;
 const MASK_TARGET_OPACITY: number = 1;
 const DISMISS_DRAG_RATIO: number = 0.25;
 const PANEL_SNAP_BACK_DURATION: number = 200;
+const NICKNAME_INPUT_ID: string = 'add_user_nickname_input';
+const AGE_INPUT_ID: string = 'add_user_age_input';
+const SIGNATURE_INPUT_ID: string = 'add_user_signature_input';
+const KEYBOARD_FOCUS_PADDING: number = 12;
+const KEYBOARD_ADJUST_DELAY_MS: number = 50;
 
 @ComponentV2
 export struct AddUserInfoPage {
@@ -25,8 +32,87 @@ export struct AddUserInfoPage {
   @Local signature: string = '';
   @Local saveStatus: string = '';
   @Local isSaving: boolean = false;
+  @Local keyboardHeight: number = 0;
+  @Local keyboardLiftY: number = 0;
   private loadingDialogId: string = '';
+  private focusedInputId: string = '';
+  private mainWindow?: window.Window;
 
+  private focusNextInput(targetId: string, enterKey: EnterKeyType, event: SubmitEvent): void {
+    focusControl.requestFocus(targetId);
+    if (enterKey === EnterKeyType.Next) {
+      event.keepEditableState();
+    }
+    this.scheduleAdjustInputForKeyboard(targetId);
+  }
+
+  private scheduleAdjustInputForKeyboard(inputId: string): void {
+    setTimeout(() => {
+      this.handleInputFocus(inputId);
+    }, KEYBOARD_ADJUST_DELAY_MS);
+  }
+
+  private handleInputFocus(inputId: string): void {
+    this.focusedInputId = inputId;
+    this.adjustInputForKeyboard(inputId);
+  }
+
+  private adjustInputForKeyboard(inputId: string): void {
+    if (this.keyboardHeight <= 0) {
+      this.keyboardLiftY = 0;
+      return;
+    }
+    try {
+      const uiContext = this.getUIContext();
+      const componentInfo = uiContext.getComponentUtils().getRectangleById(inputId);
+      const inputBottomVp = uiContext.px2vp(componentInfo.windowOffset.y + componentInfo.size.height);
+      const screenHeightVp = px2vp(display.getDefaultDisplaySync().height);
+      const keyboardTopVp = screenHeightVp - this.keyboardHeight;
+      const overlap = inputBottomVp + KEYBOARD_FOCUS_PADDING - keyboardTopVp;
+      animateTo({
+        duration: 200,
+        curve: Curve.EaseOut,
+      }, () => {
+        this.keyboardLiftY = overlap > 0 ? overlap : 0;
+      });
+    } catch (err) {
+      const error = err as BusinessError;
+      console.error(`adjustInputForKeyboard failed, code=${error.code}, message=${error.message}`);
+    }
+  }
+
+  private onKeyboardHeightChange(height: number): void {
+    this.keyboardHeight = this.getUIContext().px2vp(height);
+    if (this.keyboardHeight <= 0) {
+      this.keyboardLiftY = 0;
+      return;
+    }
+    if (this.focusedInputId.length > 0) {
+      this.scheduleAdjustInputForKeyboard(this.focusedInputId);
+    }
+  }
+
+  private registerKeyboardListener(): void {
+    const hostContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    window.getLastWindow(hostContext).then((currentWindow: window.Window) => {
+      this.mainWindow = currentWindow;
+      currentWindow.on('keyboardHeightChange', (height: number) => {
+        this.onKeyboardHeightChange(height);
+      });
+    }).catch((err: BusinessError) => {
+      console.error(`registerKeyboardListener failed, code=${err.code}, message=${err.message}`);
+    });
+  }
+
+  private unregisterKeyboardListener(): void {
+    if (this.mainWindow) {
+      this.mainWindow.off('keyboardHeightChange');
+      this.mainWindow = undefined;
+    }
+    this.keyboardHeight = 0;
+    this.keyboardLiftY = 0;
+    this.focusedInputId = '';
+  }
 
   private async handlePickAvatar(): Promise<void> {
     const uri = await pickImageUri();
@@ -139,6 +225,7 @@ export struct AddUserInfoPage {
     }, () => {
       this.maskOpacity = MASK_TARGET_OPACITY;
       this.panelTranslateY = 0;
+      this.keyboardLiftY = 0;
     });
   }
 
@@ -156,6 +243,7 @@ export struct AddUserInfoPage {
     }, () => {
       this.maskOpacity = 0;
       this.panelTranslateY = this.getPanelOffset();
+      this.keyboardLiftY = 0;
     });
   }
 
@@ -248,7 +336,6 @@ export struct AddUserInfoPage {
               .fontColor('#007DFF')
               .margin({ top: 8 })
           }
-          .width('100%')
           .alignItems(HorizontalAlign.Center)
           .margin({ bottom: 20 })
           .onClick(() => {
@@ -261,6 +348,14 @@ export struct AddUserInfoPage {
               .fontSize(15)
             TextInput({ placeholder: $r('app.string.nickname_placeholder'), text: this.nickname })
               .layoutWeight(1)
+              .id(NICKNAME_INPUT_ID)
+              .enterKeyType(EnterKeyType.Next)
+              .onSubmit((enterKey: EnterKeyType, event: SubmitEvent) => {
+                this.focusNextInput(AGE_INPUT_ID, enterKey, event);
+              })
+              .onFocus(() => {
+                this.scheduleAdjustInputForKeyboard(NICKNAME_INPUT_ID);
+              })
               .onChange((value: string) => {
                 this.nickname = value;
               })
@@ -277,7 +372,15 @@ export struct AddUserInfoPage {
               text: this.ageText,
             })
               .layoutWeight(1)
+              .id(AGE_INPUT_ID)
               .type(InputType.Number)
+              .enterKeyType(EnterKeyType.Next)
+              .onSubmit((enterKey: EnterKeyType, event: SubmitEvent) => {
+                this.focusNextInput(SIGNATURE_INPUT_ID, enterKey, event);
+              })
+              .onFocus(() => {
+                this.scheduleAdjustInputForKeyboard(AGE_INPUT_ID);
+              })
               .onChange((value: string) => {
                 this.ageText = value;
               })
@@ -296,7 +399,11 @@ export struct AddUserInfoPage {
               text: this.signature,
             })
               .layoutWeight(1)
+              .id(SIGNATURE_INPUT_ID)
               .height(80)
+              .onFocus(() => {
+                this.scheduleAdjustInputForKeyboard(SIGNATURE_INPUT_ID);
+              })
               .onChange((value: string) => {
                 this.signature = value;
               })
@@ -341,7 +448,7 @@ export struct AddUserInfoPage {
         .backgroundColor(Color.White)
         .borderRadius({ topLeft: PANEL_TOP_RADIUS, topRight: PANEL_TOP_RADIUS })
         .clip(true)
-        .translate({ y: this.panelTranslateY })
+        .translate({ y: this.panelTranslateY - this.keyboardLiftY })
         .gesture(
           PanGesture({ direction: PanDirection.Vertical, distance: 8 })
             .onActionUpdate((event: GestureEvent) => {
@@ -366,6 +473,10 @@ export struct AddUserInfoPage {
     })
     .onShown(() => {
       this.showPanel();
+      this.registerKeyboardListener();
+    })
+    .onHidden(() => {
+      this.unregisterKeyboardListener();
     })
   }
 }
