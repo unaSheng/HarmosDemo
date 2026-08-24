@@ -1,5 +1,5 @@
 import { fetchUserInfoPage } from '../common/SupabaseUserService';
-import { UserInfo } from '../model/UserInfo';
+import { isUserDetailDeleteResult, UserDetailDeleteResult, UserInfo } from '../model/UserInfo';
 import { ListAttr, ListView, LoadMoreFooterAttr, RefreshController } from '@abner/refresh';
 
 const PAGE_SIZE: number = 10;
@@ -36,17 +36,13 @@ export struct UserListPage {
     if (this.isFirstLoading || this.isEmpty) {
       return;
     }
-    if (this.hasMore) {
-      this.refreshController.finishLoadMore(false);
-      return;
-    }
-    this.refreshController.finishLoadMoreFixedBottom(true);
+    this.refreshController.finishLoadMore(!this.hasMore);
   }
 
   private resetPaginationState(): void {
     this.hasMore = true;
     this.isLoadingMore = false;
-    this.refreshController.finishLoadMore(false);
+    this.refreshController.finishLoadMore();
   }
 
   private async loadFirstPage(fromPullRefresh: boolean): Promise<void> {
@@ -85,7 +81,7 @@ export struct UserListPage {
     this.isLoadingMore = false;
 
     if (!result) {
-      this.refreshController.finishLoadMore(false);
+      this.refreshController.finishLoadMore();
       return;
     }
 
@@ -98,10 +94,49 @@ export struct UserListPage {
     });
     this.users = mergedUsers;
     this.hasMore = result.hasMore;
-    if (this.hasMore) {
-      this.refreshController.finishLoadMore(false);
-    } else {
-      this.refreshController.finishLoadMoreFixedBottom(true);
+    this.refreshController.finishLoadMore(!this.hasMore);
+  }
+
+  private updateUserInList(updatedUser: UserInfo): void {
+    const nextUsers: UserInfo[] = [];
+    let found = false;
+    this.users.forEach((user: UserInfo) => {
+      if (user.id === updatedUser.id) {
+        nextUsers.push(updatedUser);
+        found = true;
+      } else {
+        nextUsers.push(user);
+      }
+    });
+    if (found) {
+      this.users = nextUsers;
+    }
+  }
+
+  private removeUserFromList(userId: number): void {
+    const nextUsers: UserInfo[] = [];
+    this.users.forEach((user: UserInfo) => {
+      if (user.id !== userId) {
+        nextUsers.push(user);
+      }
+    });
+    this.users = nextUsers;
+    this.isEmpty = this.users.length === 0;
+  }
+
+  private handleUserDetailPop(popInfo: PopInfo): void {
+    if (!popInfo.result) {
+      return;
+    }
+    const popResult: Object = popInfo.result;
+    if (isUserDetailDeleteResult(popResult)) {
+      const deleteResult = popResult as UserDetailDeleteResult;
+      this.removeUserFromList(deleteResult.userId);
+      return;
+    }
+    const updatedUser = UserInfo.fromPlain(popResult as ESObject);
+    if (updatedUser.id > 0) {
+      this.updateUserInList(updatedUser);
     }
   }
 
@@ -174,8 +209,8 @@ export struct UserListPage {
       this.appNavStack.pushPath({
         name: 'UserDetailPage',
         param: item as UserInfo,
-        onPop: () => {
-          this.loadFirstPage(false);
+        onPop: (popInfo: PopInfo) => {
+          this.handleUserDetailPop(popInfo);
         },
       });
     })

@@ -1,8 +1,9 @@
 import { DialogAction, DialogHelper } from '@pura/harmony-dialog';
 import { SymbolGlyphModifier } from '@kit.ArkUI';
 import { isNetworkAvailable } from '../common/NetworkHelper';
+import { publishUserDeletedNotification } from '../common/NotificationHelper';
 import { deleteUserInfo, updateUserInfo } from '../common/SupabaseUserService';
-import { UserInfo } from '../model/UserInfo';
+import { UserDetailDeleteResult, UserInfo } from '../model/UserInfo';
 
 const USER_DETAIL_SAVE_MENU_SYMBOL: Resource = $r('sys.symbol.checkmark');
 
@@ -100,20 +101,18 @@ export struct UserDetailPage {
     if (this.isSaving || this.isDeleting) {
       return;
     }
-    DialogHelper.showConfirmDialog({
+    DialogHelper.showAlertDialog({
       content: $r('app.string.delete_user_confirm'),
       onAction: (action: number) => {
         if (action === DialogAction.SURE) {
           this.performDelete();
         }
       },
-      checkTips: '',
-      onCheckedChange: undefined
     });
   }
 
   private async performDelete(): Promise<void> {
-    if (this.isDeleting || this.user.id <= 0) {
+    if (this.isDeleting || this.user.id < 0) {
       return;
     }
     if (!isNetworkAvailable()) {
@@ -133,9 +132,17 @@ export struct UserDetailPage {
       return;
     }
 
+    await publishUserDeletedNotification(
+      this.getUIContext(),
+      this.user.id,
+      this.nickname.trim(),
+      this.user.avatarUrl,
+    );
+
     this.showSaveResultToast(true, $r('app.string.delete_success'));
     setTimeout(() => {
-      this.pathStack?.pop();
+      const deleteResult: UserDetailDeleteResult = { deleted: true, userId: this.user.id };
+      this.pathStack?.pop(deleteResult);
     }, 800);
   }
 

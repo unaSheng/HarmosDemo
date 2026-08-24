@@ -2,7 +2,7 @@ import { display } from '@kit.ArkUI';
 import { DialogHelper } from '@pura/harmony-dialog';
 import { isNetworkAvailable } from '../common/NetworkHelper';
 import { pickImageUri, uploadImageToSupabase } from '../common/SupabaseStorageService';
-import { insertUserInfo, updateUserInfo } from '../common/SupabaseUserService';
+import { insertUserInfo } from '../common/SupabaseUserService';
 import { UserInfo } from '../model/UserInfo';
 
 const PANEL_HEIGHT_RATIO: number = 0.58;
@@ -14,7 +14,7 @@ const DISMISS_DRAG_RATIO: number = 0.25;
 const PANEL_SNAP_BACK_DURATION: number = 200;
 
 @ComponentV2
-export struct EditUserInfoPage {
+export struct AddUserInfoPage {
   private pathStack?: NavPathStack;
   @Local panelTranslateY: number = 0;
   @Local maskOpacity: number = 0;
@@ -25,17 +25,8 @@ export struct EditUserInfoPage {
   @Local signature: string = '';
   @Local saveStatus: string = '';
   @Local isSaving: boolean = false;
-  private editingUserId: number = 0;
   private loadingDialogId: string = '';
 
-  private fillForm(user: UserInfo): void {
-    this.editingUserId = user.id;
-    this.avatarUrl = user.avatarUrl;
-    this.avatarPreviewUri = '';
-    this.nickname = user.nickname;
-    this.ageText = user.age > 0 ? user.age.toString() : '';
-    this.signature = user.signature;
-  }
 
   private async handlePickAvatar(): Promise<void> {
     const uri = await pickImageUri();
@@ -113,7 +104,6 @@ export struct EditUserInfoPage {
 
     const parsedAge = Number.parseInt(this.ageText, 10);
     const user = new UserInfo();
-    user.id = this.editingUserId;
     user.avatarUrl = finalAvatarUrl;
     user.nickname = this.nickname.trim();
     user.age = Number.isNaN(parsedAge) ? 0 : parsedAge;
@@ -122,11 +112,7 @@ export struct EditUserInfoPage {
     this.updateSaveLoading('保存中...');
 
     let result: UserInfo | undefined = undefined;
-    if (this.editingUserId > 0) {
-      result = await updateUserInfo(user);
-    } else {
-      result = await insertUserInfo(user);
-    }
+    result = await insertUserInfo(user);
 
     this.hideSaveLoading();
     this.isSaving = false;
@@ -377,10 +363,6 @@ export struct EditUserInfoPage {
       this.pathStack = ctx.pathStack;
       this.panelTranslateY = this.getPanelOffset();
       this.maskOpacity = 0;
-      const param = ctx.pathInfo.param as UserInfo;;
-      if (param) {
-        this.fillForm(UserInfo.fromPlain(param as ESObject));
-      }
     })
     .onShown(() => {
       this.showPanel();

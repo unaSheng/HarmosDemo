@@ -7,8 +7,25 @@ export interface UserInfoRecord {
   created_at?: string;
 }
 
+export interface UserInfoInsertRecord {
+  avatar_url: string;
+  nickname: string;
+  age: number;
+  signature: string;
+}
+
 interface UserInfoUpdateRecord extends UserInfoRecord {
   id: number;
+}
+
+export interface UserDetailDeleteResult {
+  deleted: boolean;
+  userId: number;
+}
+
+export function isUserDetailDeleteResult(result: Object): boolean {
+  const candidate = result as UserDetailDeleteResult;
+  return candidate.deleted === true && candidate.userId > 0;
 }
 
 @ObservedV2
@@ -19,13 +36,12 @@ export class UserInfo {
   @Trace age: number = 0;
   @Trace signature: string = '';
 
-  toInsertRecord(): UserInfoRecord {
-    const record: UserInfoRecord = {
+  toInsertRecord(): UserInfoInsertRecord {
+    const record: UserInfoInsertRecord = {
       avatar_url: this.avatarUrl,
       nickname: this.nickname,
       age: this.age,
       signature: this.signature,
-      id: this.id
     };
     return record;
   }

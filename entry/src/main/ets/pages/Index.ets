@@ -1,7 +1,7 @@
 import { HomeTabContent } from '../components/HomeTabContent';
 import { MeTabContent } from '../components/MeTabContent';
 import { UserDetailPage } from './UserDetailPage';
-import { EditUserInfoPage } from './EditUserInfoPage';
+import { AddUserInfoPage } from './AddUserInfoPage';
 import { TestPage } from './TestPage';
 
 @Entry
@@ -32,7 +32,7 @@ struct Index {
     if (name === 'UserDetailPage') {
       UserDetailPage()
     } else if (name === 'EditUserInfoPage') {
-      EditUserInfoPage()
+      AddUserInfoPage()
     } else if (name === 'TestPage') {
       TestPage()
     }
