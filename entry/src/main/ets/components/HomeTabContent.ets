@@ -73,7 +73,7 @@ export struct HomeTabContent {
   }
 
   build() {
-    Stack({ alignContent: Alignment.TopEnd }) {
+    Stack({ alignContent: Alignment.Bottom }) {
       MapComponent({
         mapOptions: this.mapOptions,
         mapCallback: this.mapCallback,
@@ -85,7 +85,7 @@ export struct HomeTabContent {
       Button($r('app.string.open_baidu'))
         .fontSize(14)
         .height(32)
-        .margin({ top: 12, right: 12 })
+        .margin({ bottom: 12 })
         .onClick(() => {
           this.locateCurrentPosition();
         })
